@@ -1,0 +1,21 @@
+{
+    "name": "orangehill/iseed",
+    "description": "Generate a new seed file based on data from the existing database table.",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Tihomir Opacic",
+            "email": "tihomir.opacic@orangehilldev.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "psr-0": {
+            "Orangehill\\Iseed": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
