@@ -25,6 +25,8 @@ class Iseed {
 		// Get the data
 		$data = \DB::table($table)->get();
 
+        	$dataArray = array();
+        
 		foreach ($data as $row)
 		{
 			$rowArray = array();
