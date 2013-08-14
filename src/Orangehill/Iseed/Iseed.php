@@ -62,7 +62,7 @@ class Iseed {
 	 */
 	protected function generateClassName($table)
 	{
-		return ucfirst($table) . 'TableSeeder';
+		return ucfirst(camel_case($table)) . 'TableSeeder';
 	}
 
 	/**
