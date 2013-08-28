@@ -37,6 +37,12 @@ class IseedServiceProvider extends ServiceProvider {
 			$loader = \Illuminate\Foundation\AliasLoader::getInstance();
 			$loader->alias('Iseed', 'Orangehill\Iseed\Facades\Iseed');
 		});
+
+		$this->app['command.iseed'] = $this->app->share(function($app)
+		{
+			return new IseedCommand;
+		});
+		$this->commands('command.iseed');
 	}
 
 	/**

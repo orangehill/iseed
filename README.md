@@ -19,7 +19,7 @@
 
 ## Usage
 
-To generate a seed file simply call: `\Iseed::generateSeed('users');`
+To generate a seed file for your users table simply call: `\Iseed::generateSeed('users');`
 
 This will create a file inside a `/app/database/seeds`, with the contents similar to following example:
 
@@ -79,9 +79,10 @@ This will create a file inside a `/app/database/seeds`, with the contents simila
 
 This command will also update `app/database/seeds/DatabaseSeeder.php` to include a call to this newly generated seed class.
 
+Alternatively you can run Iseed from the command line using Artisan, e.g. `php artisan iseed users`.
+
 To (re)seed the database go to the Terminal and run Laravel's `db:seed command` (`php artisan db:seed`).
 
 ## Todo
 
-- implement as artisan command `iseed:make table_name`
 - implement tests
