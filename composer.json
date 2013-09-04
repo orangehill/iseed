@@ -1,6 +1,6 @@
 {
     "name": "orangehill/iseed",
-    "description": "Generate a new seed file based on data from the existing database table.",
+    "description": "Generate a new Laravel database seed file based on data from the existing database table.",
     "license": "BSD-2-Clause",
     "authors": [
         {
