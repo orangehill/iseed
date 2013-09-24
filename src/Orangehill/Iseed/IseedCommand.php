@@ -31,13 +31,13 @@ class IseedCommand extends Command {
 	}
 
 	/**
-	 * Execute the console command.	
+	 * Execute the console command.
 	 *
 	 * @return void
 	 */
 	public function fire()
 	{
-		app('iseed')->generateSeed($this->argument('table'));
+		$this->printResult(app('iseed')->generateSeed($this->argument('table')), $this->argument('table'));
 	}
 
 	/**
@@ -51,5 +51,22 @@ class IseedCommand extends Command {
 			array('table', InputArgument::REQUIRED, 'table name'),
 		);
 	}
+
+    /**
+     * Provide user feedback, based on success or not.
+     *
+     * @param  boolean $successful
+     * @param  string $table
+     * @return void
+     */
+    protected function printResult($successful, $table)
+    {
+        if ($successful)
+        {
+            return $this->info("Created a seed file from table {$table}");
+        }
+
+        $this->error("Could not create seed file from table {$table}");
+    }
 
 }

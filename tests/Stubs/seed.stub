@@ -1,0 +1,16 @@
+<?php
+
+class test_class extends Seeder {
+
+	/**
+	 * Auto generated seed file
+	 *
+	 * @return void
+	 */
+	public function run()
+	{
+		\DB::table('test_table')->delete();
+		\DB::table('test_table')->insert(test_data);
+	}
+
+}

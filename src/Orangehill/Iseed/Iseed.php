@@ -4,38 +4,27 @@ use Illuminate\Filesystem\Filesystem;
 
 class Iseed {
 
-	public function __construct()
+	public function __construct(Filesystem $filesystem = null)
 	{
-		$this->files = new Filesystem;
+		$this->files = $filesystem ?: new Filesystem;
 	}
 
 	/**
 	 * Generates a seed file.
-	 *
 	 * @param  string  $table
 	 * @return void
 	 * @throws Orangehill\Iseed\TableNotFoundException
 	 */
 	public function generateSeed($table)
 	{
-
 		// Check if table exists
-		if (!\Schema::hasTable($table)) throw new TableNotFoundException("Table $table was not found.");
+		if (!$this->hasTable($table)) throw new TableNotFoundException("Table $table was not found.");
 
 		// Get the data
-		$data = \DB::table($table)->get();
+		$data = $this->getData($table);
 
-        	$dataArray = array();
-        
-		foreach ($data as $row)
-		{
-			$rowArray = array();
-			foreach($row as $columnName => $columnValue)
-			{
-				 $rowArray[$columnName] = $columnValue;
-			}
-			$dataArray[] = $rowArray;
-		}
+		// Repack the data
+		$dataArray = $this->repackSeedData($data);
 
 		// Generate class name
 		$className = $this->generateClassName($table);
@@ -44,57 +33,108 @@ class Iseed {
 		$stub = $this->files->get($this->getStubPath() . '/seed.stub');
 
 		// Get a seed folder path
-		$seedPath = app_path() . \Config::get('iseed::path');
+		$seedPath = $this->getSeedPath();
+
+		// Get a app/database/seeds path
+		$seedsPath = $this->getPath($className, $seedPath);
+
+		// Get a populated stub file
+		$seedContent = $this->populateStub($className, $stub, $table, $this->prettifyArray($dataArray));
 
 		// Save a populated stub
-		$this->files->put($this->getPath($className, $seedPath), $this->populateStub($className, $stub, $table, $this->prettifyArray($dataArray)));
+		$this->files->put($seedsPath, $seedContent);
 
 		// Update the DatabaseSeeder.php file
-		$this->updateDatabaseSeederRunMethod($className);
+		return $this->updateDatabaseSeederRunMethod($className) !== false;
+
+        return false;
 
 	}
 
 	/**
+	 * Get a seed folder path
+	 * @return string
+	 */
+	public function getSeedPath()
+	{
+		return app_path() . \Config::get('iseed::path');
+	}
+
+	/**
+	 * Get the Data
+	 * @param  string $table
+	 * @return Array
+	 */
+	public function getData($table)
+	{
+		return \DB::table($table)->get();
+	}
+
+	/**
+	 * Repacks data read from the database
+	 * @param  object $data
+	 * @return array
+	 */
+	public function repackSeedData($data)
+	{
+    	$dataArray = array();
+    	if(is_array($data)) {
+			foreach ($data as $row) {
+				$rowArray = array();
+				foreach($row as $columnName => $columnValue) {
+					 $rowArray[$columnName] = $columnValue;
+				}
+				$dataArray[] = $rowArray;
+			}
+    	}
+		return $dataArray;
+	}
+
+	/**
+	 * Checks if a database table exists
+	 * @return boolean
+	 */
+	public function hasTable($table)
+	{
+		return \Schema::hasTable($table);
+	}
+
+	/**
 	 * Generates a seed class name (also used as a filename)
-	 *
 	 * @param  string  $table
 	 * @return string
 	 */
-	protected function generateClassName($table)
+	public function generateClassName($table)
 	{
 		return ucfirst($table) . 'TableSeeder';
 	}
 
 	/**
 	 * Get the path to the stub file.
-	 *
 	 * @return string
 	 */
-	protected function getStubPath()
+	public function getStubPath()
 	{
 		return __DIR__ . '/Stubs';
 	}
 
 	/**
 	 * Populate the place-holders in the seed stub.
-	 *
 	 * @param  string  $class
 	 * @param  string  $stub
 	 * @param  string  $table
 	 * @param  string  $data
 	 * @return string
 	 */
-	protected function populateStub($class, $stub, $table, $data)
+	public function populateStub($class, $stub, $table, $data)
 	{
 		$stub = str_replace('{{class}}', $class, $stub);
 
-		if ( ! is_null($table))
-		{
+		if (!is_null($table)) {
 			$stub = str_replace('{{table}}', $table, $stub);
 		}
 
-		if ( ! is_null($data))
-		{
+		if (!is_null($data)) {
 			$stub = str_replace('{{data}}', $data, $stub);
 		}
 
@@ -103,19 +143,17 @@ class Iseed {
 
 	/**
 	 * Create the full path name to the seed file.
-	 *
 	 * @param  string  $name
 	 * @param  string  $path
 	 * @return string
 	 */
-	protected function getPath($name, $path)
+	public function getPath($name, $path)
 	{
 		return $path . '/' . $name . '.php';
 	}
 
 	/**
 	 * Prettify a var_export of an array
-	 *
 	 * @param  array  $array
 	 * @return string
 	 */
@@ -129,11 +167,10 @@ class Iseed {
 
     /**
     * Updates the DatabaseSeeder file's run method (kudoz to: https://github.com/JeffreyWay/Laravel-4-Generators)
-    *
     * @param  string  $className
-    * @return void
+    * @return bool
     */
-    protected function updateDatabaseSeederRunMethod($className)
+    public function updateDatabaseSeederRunMethod($className)
     {
     	$databaseSeederPath = app_path() . \Config::get('iseed::path') . '/DatabaseSeeder.php';
 
@@ -141,7 +178,8 @@ class Iseed {
         if(strpos($content, '$this->call(\'UsersTableSeeder\')')===false)
 			$content = preg_replace("/(run\(\).+?)}/us", "$1\t\$this->call('{$className}');\n\t}", $content);
 
-        $this->files->put($databaseSeederPath, $content);
+        return $this->files->put($databaseSeederPath, $content) !== false;
+        return false;
     }
 
 }
