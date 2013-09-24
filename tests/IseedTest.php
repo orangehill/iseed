@@ -33,7 +33,7 @@ class IseedTest extends PHPUnit_Framework_TestCase {
      */
     public function testTableNotFoundException()
     {
-        $hasTable = m::mock('Orangehill\Iseed\Iseed[hasTable]');
+        $hasTable = m::mock('Orangehill\Iseed\Iseed[hasTable]')->makePartial();
         $hasTable->shouldReceive('hasTable')->once()->andReturn(false);
         $hasTable->generateSeed('nonexisting');
     }
