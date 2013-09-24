@@ -1,5 +1,7 @@
 **Inverse seed generator (iSeed)** is a Laravel 4 package that provides a method to generate a new seed file based on data from the existing database table.
 
+[![Build Status](https://travis-ci.org/orangehill/iseed.png)](http://travis-ci.org/orangehill/iseed)
+
 ## Installation
 
 1) Edit your project's `composer.json` file to require `orangehill/iseed`.
@@ -82,7 +84,3 @@ This command will also update `app/database/seeds/DatabaseSeeder.php` to include
 Alternatively you can run Iseed from the command line using Artisan, e.g. `php artisan iseed users`.
 
 To (re)seed the database go to the Terminal and run Laravel's `db:seed command` (`php artisan db:seed`).
-
-## Todo
-
-- implement tests
