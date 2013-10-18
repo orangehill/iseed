@@ -10,7 +10,7 @@ class test_class extends Seeder {
 	public function run()
 	{
 		\DB::table('test_table')->delete();
-		{{insert_statements}}
+        
 	}
 
 }
