@@ -128,6 +128,7 @@ class Iseed {
 	 */
 	public function populateStub($class, $stub, $table, $data)
 	{
+        // Split input data into inserts with 500 rows limit each
         $inserts = '';
         $chunks = array_chunk($data, 500);
         foreach ($chunks as $chunk) {
