@@ -1,0 +1,43 @@
+<?php
+
+class test_class extends Seeder {
+
+	/**
+	 * Auto generated seed file
+	 *
+	 * @return void
+	 */
+	public function run()
+	{
+		\DB::table('test_table')->delete();
+        
+		\DB::table('test_table')->insert(array (
+			0 => 
+			array (
+				'id' => '1',
+				'time' => '2013-10-18 14:28:51',
+			),
+			1 => 
+			array (
+				'id' => '2',
+				'time' => '2013-10-18 14:28:51',
+			),
+			2 => 
+			array (
+				'id' => '3',
+				'time' => '2013-10-18 14:28:51',
+			),
+			3 => 
+			array (
+				'id' => '4',
+				'time' => '2013-10-18 14:28:51',
+			),
+			4 => 
+			array (
+				'id' => '5',
+				'time' => '2013-10-18 14:28:51',
+			),
+		));
+	}
+
+}

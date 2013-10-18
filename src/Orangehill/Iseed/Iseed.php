@@ -39,7 +39,7 @@ class Iseed {
 		$seedsPath = $this->getPath($className, $seedPath);
 
 		// Get a populated stub file
-		$seedContent = $this->populateStub($className, $stub, $table, $this->prettifyArray($dataArray));
+		$seedContent = $this->populateStub($className, $stub, $table, $dataArray);
 
 		// Save a populated stub
 		$this->files->put($seedsPath, $seedContent);
@@ -128,15 +128,20 @@ class Iseed {
 	 */
 	public function populateStub($class, $stub, $table, $data)
 	{
+        // Split input data into inserts with 500 rows limit each
+        $inserts = '';
+        $chunks = array_chunk($data, 500);
+        foreach ($chunks as $chunk) {
+            $inserts .= sprintf("\n\t\t\DB::table('%s')->insert(%s);", $table, $this->prettifyArray($chunk));
+        }
+        
 		$stub = str_replace('{{class}}', $class, $stub);
 
 		if (!is_null($table)) {
 			$stub = str_replace('{{table}}', $table, $stub);
 		}
 
-		if (!is_null($data)) {
-			$stub = str_replace('{{data}}', $data, $stub);
-		}
+		$stub = str_replace('{{insert_statements}}', $inserts, $stub);
 
 		return $stub;
 	}
