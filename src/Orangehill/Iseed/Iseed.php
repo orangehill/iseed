@@ -128,9 +128,8 @@ class Iseed {
 	 */
 	public function populateStub($class, $stub, $table, $data)
 	{
-        // Split input data into inserts with 500 rows limit each
         $inserts = '';
-        $chunks = array_chunk($data, 500);
+        $chunks = array_chunk($data, \Config::get('iseed::chunk_size'));
         foreach ($chunks as $chunk) {
             $inserts .= sprintf("\n\t\t\DB::table('%s')->insert(%s);", $table, $this->prettifyArray($chunk));
         }
