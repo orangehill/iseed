@@ -126,10 +126,11 @@ class Iseed {
 	 * @param  string  $data
 	 * @return string
 	 */
-	public function populateStub($class, $stub, $table, $data)
+	public function populateStub($class, $stub, $table, $data, $chunkSize = null)
 	{
+        $chunkSize = $chunkSize ?: \Config::get('iseed::chunk_size');
         $inserts = '';
-        $chunks = array_chunk($data, \Config::get('iseed::chunk_size'));
+        $chunks = array_chunk($data, $chunkSize);
         foreach ($chunks as $chunk) {
             $inserts .= sprintf("\n\t\t\DB::table('%s')->insert(%s);", $table, $this->prettifyArray($chunk));
         }
@@ -144,7 +145,7 @@ class Iseed {
 
 		return $stub;
 	}
-
+    
 	/**
 	 * Create the full path name to the seed file.
 	 * @param  string  $name
