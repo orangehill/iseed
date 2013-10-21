@@ -1,7 +1,7 @@
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 use Mockery as m;
-use Illuminate\Database\Schema;
 
 class IseedTest extends PHPUnit_Framework_TestCase {
 
@@ -2076,9 +2076,8 @@ class IseedTest extends PHPUnit_Framework_TestCase {
                     )
         )));
         $iSeed = new Orangehill\Iseed\Iseed();
-        
         foreach ($testStubs as $key=>$stub){
-            $output = $iSeed->populateStub('test_class', $productionStub, 'test_table', $stub['data']);
+            $output = $iSeed->populateStub('test_class', $productionStub, 'test_table', $stub['data'], 500);
             $this->assertEquals($stub['content'], $output, "Stub {$key} is not what's it's expected to be.");
         }
     }
