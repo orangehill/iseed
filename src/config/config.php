@@ -3,6 +3,6 @@
 return array(
 
 	'path' => '/database/seeds',
-    'chunk_size' => 200 // Maximum number of rows per insert statement
+    'chunk_size' => 500 // Maximum number of rows per insert statement
 
 );
