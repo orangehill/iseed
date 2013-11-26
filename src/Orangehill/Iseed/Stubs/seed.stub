@@ -9,7 +9,7 @@ class {{class}} extends Seeder {
 	 */
 	public function run()
 	{
-		\DB::table('{{table}}')->delete();
+		\DB::table('{{table}}')->truncate();
         {{insert_statements}}
 	}
 
