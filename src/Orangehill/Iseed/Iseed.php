@@ -180,7 +180,7 @@ class Iseed {
     	$databaseSeederPath = app_path() . \Config::get('iseed::path') . '/DatabaseSeeder.php';
 
         $content = $this->files->get($databaseSeederPath);
-        if(strpos($content, '$this->call(\'UsersTableSeeder\')')===false)
+        if(strpos($content, "\$this->call('{$className}')")===false)
 			$content = preg_replace("/(run\(\).+?)}/us", "$1\t\$this->call('{$className}');\n\t}", $content);
 
         return $this->files->put($databaseSeederPath, $content) !== false;
