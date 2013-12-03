@@ -39,7 +39,7 @@ This will create a file inside a `/app/database/seeds`, with the contents simila
 		 */
 		public function run()
 		{
-			\DB::table('users')->delete();
+			\DB::table('users')->truncate();
 			\DB::table('users')->insert(array (
 				0 =>
 				array (
@@ -89,4 +89,4 @@ To (re)seed the database go to the Terminal and run Laravel's `db:seed command` 
 Please note that some users encountered a problem with large DB table exports ([error when seeding from table with many records](https://github.com/orangehill/iseed/issues/4)). The issue was solved by splitting input data into smaller chunks of elements per insert statement. As you may need to change the chunk size value in some extreme cases where DB table has a large number of columns, the chunk size is configurable in iSeed's `config.php` file:
 
 	'chunk_size' => 500 // Maximum number of rows per insert statement
- 
+
