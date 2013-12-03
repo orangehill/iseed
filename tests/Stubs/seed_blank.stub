@@ -1,4 +1,3 @@
-
 <?php
 
 class test_class extends Seeder {
@@ -10,8 +9,8 @@ class test_class extends Seeder {
 	 */
 	public function run()
 	{
-		\DB::table('test_table')->truncate();
-
+		\DB::table('test_table')->delete();
+        
 	}
 
 }
