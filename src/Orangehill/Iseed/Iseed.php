@@ -165,8 +165,30 @@ class Iseed {
 	protected function prettifyArray($array)
 	{
 		$content = var_export($array, true);
-		$content = str_replace("  ", "\t", $content);
-		$content = str_replace("\n", "\n\t\t", $content);
+
+		//Removes double spaces
+		$content = str_replace("  ", "", $content);
+
+		//prettify array, but ignore multiline strings
+		$tabCount = 1;
+		$inString = false;
+		for($i = 0; $i < strlen($content); $i++) {
+			if($content[$i] == '(') {
+				$tabCount++;
+			} else if($content[$i] == ')'){
+				$tabCount--;
+			} else if($content[$i] == '\''){
+				$inString = !$inString;
+			} else if($content[$i] == "\n"){
+				if ($inString == false) {
+					for($j = 0; $j < $tabCount; $j++) {
+						$content = substr_replace($content, "\t", $i + 1, 0);
+						$i = $i + 1;
+					}
+				}
+			}
+		}
+
 		return $content;
 	}
 
