@@ -166,28 +166,43 @@ class Iseed {
 	{
 		$content = var_export($array, true);
 
-		//Removes double spaces
-		$content = str_replace("  ", "", $content);
+		$lines = explode("\n", $content);
 
-		//prettify array, but ignore multiline strings
-		$tabCount = 1;
 		$inString = false;
-		for($i = 0; $i < strlen($content); $i++) {
-			if($content[$i] == '(') {
-				$tabCount++;
-			} else if($content[$i] == ')'){
+		$tabCount = 3;
+		for($i = 1; $i < count($lines); $i++) {
+			$lines[$i] = ltrim($lines[$i]);
+
+			//Check for closing bracket
+			if(strpos($lines[$i], ')') !== false) {
 				$tabCount--;
-			} else if($content[$i] == '\''){
-				$inString = !$inString;
-			} else if($content[$i] == "\n"){
-				if ($inString == false) {
-					for($j = 0; $j < $tabCount; $j++) {
-						$content = substr_replace($content, "\t", $i + 1, 0);
-						$i = $i + 1;
-					}
+			}
+
+			//Insert tab count
+			if ($inString === false) {
+				for($j = 0; $j < $tabCount; $j++) {
+					$lines[$i] = substr_replace($lines[$i], "\t", 0, 0);
 				}
 			}
+
+			for($j = 0; $j < strlen($lines[$i]); $j++) {
+				//skip character right after an escape \
+				if($lines[$i][$j] == '\\') {
+					$j++;
+				}
+				//check string open/end
+				else if($lines[$i][$j] == '\'') {
+					$inString = !$inString;
+				}
+			}
+
+			//check for openning bracket
+			if(strpos($lines[$i], '(') !== false) {
+				$tabCount++;
+			}
 		}
+
+		$content = implode("\n", $lines);
 
 		return $content;
 	}
