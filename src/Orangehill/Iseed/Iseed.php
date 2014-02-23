@@ -165,8 +165,45 @@ class Iseed {
 	protected function prettifyArray($array)
 	{
 		$content = var_export($array, true);
-		$content = str_replace("  ", "\t", $content);
-		$content = str_replace("\n", "\n\t\t", $content);
+
+		$lines = explode("\n", $content);
+
+		$inString = false;
+		$tabCount = 3;
+		for($i = 1; $i < count($lines); $i++) {
+			$lines[$i] = ltrim($lines[$i]);
+
+			//Check for closing bracket
+			if(strpos($lines[$i], ')') !== false) {
+				$tabCount--;
+			}
+
+			//Insert tab count
+			if ($inString === false) {
+				for($j = 0; $j < $tabCount; $j++) {
+					$lines[$i] = substr_replace($lines[$i], "\t", 0, 0);
+				}
+			}
+
+			for($j = 0; $j < strlen($lines[$i]); $j++) {
+				//skip character right after an escape \
+				if($lines[$i][$j] == '\\') {
+					$j++;
+				}
+				//check string open/end
+				else if($lines[$i][$j] == '\'') {
+					$inString = !$inString;
+				}
+			}
+
+			//check for openning bracket
+			if(strpos($lines[$i], '(') !== false) {
+				$tabCount++;
+			}
+		}
+
+		$content = implode("\n", $lines);
+
 		return $content;
 	}
 
