@@ -106,7 +106,12 @@ class Iseed {
 	 */
 	public function generateClassName($table)
 	{
-		return ucfirst($table) . 'TableSeeder';
+		$tableString = '';
+		$tableName = explode('_', $table);
+		foreach($tableName as $tableNameExploded) {
+			$tableString .= ucfirst($tableNameExploded);
+		}
+		return ucfirst($tableString) . 'TableSeeder';
 	}
 
 	/**
