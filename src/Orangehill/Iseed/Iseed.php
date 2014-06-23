@@ -12,7 +12,7 @@ class Iseed {
 	/**
 	 * Generates a seed file.
 	 * @param  string  $table
-	 * @return void
+	 * @return bool
 	 * @throws Orangehill\Iseed\TableNotFoundException
 	 */
 	public function generateSeed($table)
@@ -46,9 +46,6 @@ class Iseed {
 
 		// Update the DatabaseSeeder.php file
 		return $this->updateDatabaseSeederRunMethod($className) !== false;
-
-        return false;
-
 	}
 
 	/**
@@ -72,7 +69,7 @@ class Iseed {
 
 	/**
 	 * Repacks data read from the database
-	 * @param  object $data
+	 * @param  array|object $data
 	 * @return array
 	 */
 	public function repackSeedData($data)
@@ -92,6 +89,7 @@ class Iseed {
 
 	/**
 	 * Checks if a database table exists
+	 * @param string $table
 	 * @return boolean
 	 */
 	public function hasTable($table)
@@ -129,6 +127,7 @@ class Iseed {
 	 * @param  string  $stub
 	 * @param  string  $table
 	 * @param  string  $data
+	 * @param  int     $chunkSize
 	 * @return string
 	 */
 	public function populateStub($class, $stub, $table, $data, $chunkSize = null)
@@ -226,7 +225,6 @@ class Iseed {
 			$content = preg_replace("/(run\(\).+?)}/us", "$1\t\$this->call('{$className}');\n\t}", $content);
 
         return $this->files->put($databaseSeederPath, $content) !== false;
-        return false;
     }
 
 }
