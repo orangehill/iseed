@@ -82,7 +82,10 @@ class Iseed {
 			foreach ($data as $row) {
 				$rowArray = array();
 				foreach($row as $columnName => $columnValue) {
-					 $rowArray[$columnName] = $columnValue;
+					if($columnValue!=''){
+						$rowArray[$columnName] = $columnValue;
+					}
+					//Above fix lets iSeed not to grab null values. It is useful if you want field default value instead of a null
 				}
 				$dataArray[] = $rowArray;
 			}
