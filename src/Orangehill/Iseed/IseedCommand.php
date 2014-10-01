@@ -37,6 +37,11 @@ class IseedCommand extends Command {
 	 */
 	public function fire()
 	{
+		if($this->option('clean'))
+		{
+			app('iseed')->cleanSection();
+		}
+
 		$this->printResult(app('iseed')->generateSeed($this->argument('table')), $this->argument('table'));
 	}
 
@@ -49,6 +54,18 @@ class IseedCommand extends Command {
 	{
 		return array(
 			array('table', InputArgument::REQUIRED, 'table name'),
+		);
+	}
+
+	/**
+	 * Get the console command options.
+	 *
+	 * @return array
+	 */
+	protected function getOptions()
+	{
+		return array(
+			array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
 		);
 	}
 

@@ -212,6 +212,22 @@ class Iseed {
 		return $content;
 	}
 
+ 	/**
+    * Cleans the iSeed section
+    * @return bool
+    */
+	public function cleanSection()
+	{
+		$databaseSeederPath = app_path() . \Config::get('iseed::path') . '/DatabaseSeeder.php';
+
+		$content = $this->files->get($databaseSeederPath);
+
+		$content = preg_replace("/(\#iseed_start.+?)\#iseed_end/us", "#iseed_start\n\t\t#iseed_end", $content);
+
+		return $this->files->put($databaseSeederPath, $content) !== false;
+        return false;
+	}
+
     /**
     * Updates the DatabaseSeeder file's run method (kudoz to: https://github.com/JeffreyWay/Laravel-4-Generators)
     * @param  string  $className
