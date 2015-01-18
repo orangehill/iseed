@@ -37,7 +37,10 @@ class IseedCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->printResult(app('iseed')->generateSeed($this->argument('table')), $this->argument('table'));
+
+        foreach ($this->argument('table') as $table) {
+            $this->printResult(app('iseed')->generateSeed($table), $table);
+        }
 	}
 
 	/**
@@ -48,7 +51,7 @@ class IseedCommand extends Command {
 	protected function getArguments()
 	{
 		return array(
-			array('table', InputArgument::REQUIRED, 'table name'),
+			array('table', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'table names'),
 		);
 	}
 
