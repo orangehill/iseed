@@ -37,7 +37,11 @@ class IseedCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->printResult(app('iseed')->generateSeed($this->argument('table')), $this->argument('table'));
+		$tables = explode(',', $this->argument('tables'));
+
+		foreach ($tables as $table) {
+			$this->printResult(app('iseed')->generateSeed($table,$this->option('database')), $table);
+		}
 	}
 
 	/**
@@ -48,25 +52,38 @@ class IseedCommand extends Command {
 	protected function getArguments()
 	{
 		return array(
-			array('table', InputArgument::REQUIRED, 'table name'),
+
+			array('tables', InputArgument::REQUIRED, 'table name'),
 		);
 	}
 
-    /**
-     * Provide user feedback, based on success or not.
-     *
-     * @param  boolean $successful
-     * @param  string $table
-     * @return void
-     */
-    protected function printResult($successful, $table)
-    {
-        if ($successful)
-        {
-            return $this->info("Created a seed file from table {$table}");
-        }
+	/**
+	 * Get the console command options.
+	 *
+	 * @return array
+	 */
+	protected function getOptions()
+	{
+		return array(
+			array('database', \Config::get('database.default'), InputOption::VALUE_OPTIONAL, 'database connection', null),
+		);
+	}
 
-        $this->error("Could not create seed file from table {$table}");
-    }
+	/**
+	 * Provide user feedback, based on success or not.
+	 *
+	 * @param  boolean $successful
+	 * @param  string $table
+	 * @return void
+	 */
+	protected function printResult($successful, $table)
+	{
+		if ($successful)
+		{
+			return $this->info("Created a seed file from table {$table}");
+		}
+
+		$this->error("Could not create seed file from table {$table}");
+	}
 
 }
