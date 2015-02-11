@@ -80,9 +80,41 @@ This will create a file inside a `/app/database/seeds`, with the contents simila
 
 	}
 
-This command will also update `app/database/seeds/DatabaseSeeder.php` to include a call to this newly generated seed class.
+This command will also update `app/database/seeds/DatabaseSeeder.php` to include a call to this newly generated seed class. 
+
+If you wish you can define custom iSeed template in which all the calls will be placed. You can do this by using `#iseed_start` and `#iseed_end` templates anywhere  within `app/database/seeds/DatabaseSeeder.php`, for example: 
+
+	<?php
+
+	// File: /app/database/seeds/DatabaseSeeder.php
+	class DatabaseSeeder extends Seeder {
+
+		/**
+		 * Run the database seeds.
+		 *
+		 * @return void
+		 */
+		public function run()
+		{
+			Eloquent::unguard();
+
+		    if(App::environment() == "local")
+		    {
+		        throw new \Exception('Only run this from production');
+		    }
+			
+			#iseed_start
+			
+			// here all the calls for newly generated seeds will be stored. 
+
+			#iseed_end
+		}
+
+	}
 
 Alternatively you can run Iseed from the command line using Artisan, e.g. `php artisan iseed users`.
+
+If you wish to clear iSeed template you can use Artisan Command Option `--clean`, e.g. `php artisan iseed users --clean`. This will clean template from `app/database/seeds/DatabaseSeeder.php` before creating new seed class.
 
 To (re)seed the database go to the Terminal and run Laravel's `db:seed command` (`php artisan db:seed`).
 
