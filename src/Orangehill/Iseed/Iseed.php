@@ -211,6 +211,22 @@ class Iseed {
 		return $content;
 	}
 
+ 	/**
+    * Cleans the iSeed section
+    * @return bool
+    */
+	public function cleanSection()
+	{
+		$databaseSeederPath = app_path() . \Config::get('iseed::path') . '/DatabaseSeeder.php';
+
+		$content = $this->files->get($databaseSeederPath);
+
+		$content = preg_replace("/(\#iseed_start.+?)\#iseed_end/us", "#iseed_start\n\t\t#iseed_end", $content);
+
+		return $this->files->put($databaseSeederPath, $content) !== false;
+        return false;
+	}
+
     /**
     * Updates the DatabaseSeeder file's run method (kudoz to: https://github.com/JeffreyWay/Laravel-4-Generators)
     * @param  string  $className
@@ -222,7 +238,16 @@ class Iseed {
 
         $content = $this->files->get($databaseSeederPath);
         if(strpos($content, "\$this->call('{$className}')")===false)
-			$content = preg_replace("/(run\(\).+?)}/us", "$1\t\$this->call('{$className}');\n\t}", $content);
+        {
+        	if(strpos($content, '#iseed_start') && strpos($content, '#iseed_end'))
+        	{
+        		$content = preg_replace("/(\#iseed_start.+?)\#iseed_end/us", "$1\$this->call('{$className}');\n\t\t#iseed_end", $content);
+        	}
+        	else
+        	{
+        		$content = preg_replace("/(run\(\).+?)}/us", "$1\t\$this->call('{$className}');\n\t}", $content);
+        	}
+        }
 
         return $this->files->put($databaseSeederPath, $content) !== false;
     }
