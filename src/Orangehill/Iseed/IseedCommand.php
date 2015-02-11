@@ -23,7 +23,7 @@ class IseedCommand extends Command {
 	/**
 	 * Create a new command instance.
 	 *
-	 * @return void
+	 * @return \Orangehill\Iseed\IseedCommand
 	 */
 	public function __construct()
 	{
@@ -63,7 +63,8 @@ class IseedCommand extends Command {
     {
         if ($successful)
         {
-            return $this->info("Created a seed file from table {$table}");
+            $this->info("Created a seed file from table {$table}");
+            return;
         }
 
         $this->error("Could not create seed file from table {$table}");
