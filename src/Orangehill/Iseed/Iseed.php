@@ -239,7 +239,7 @@ class Iseed {
         $content = $this->files->get($databaseSeederPath);
         if(strpos($content, "\$this->call('{$className}')")===false)
         {
-        	if(strpos($content, '#iseed_start') && strpos($content, '#iseed_end'))
+        	if(strpos($content, '#iseed_start') && strpos($content, '#iseed_end') && strpos($content, '#iseed_start') < strpos($content, '#iseed_end'))
         	{
         		$content = preg_replace("/(\#iseed_start.+?)\#iseed_end/us", "$1\$this->call('{$className}');\n\t\t#iseed_end", $content);
         	}
