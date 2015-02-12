@@ -42,22 +42,26 @@ class IseedCommand extends Command {
 			app('iseed')->cleanSection();
 		}
 
-		// generate file and class name based on name of the table
-		list($fileName, $className) = $this->generateFileName($this->argument('table'));
+		$force = $this->option('force');
+		$tables = explode(",", $this->argument('tables'));
 
-		// if file does not exist generate seeder
-		if(!\File::exists($fileName)) {
-			$this->printResult(app('iseed')->generateSeed($this->argument('table')), $this->argument('table'));
-			return;
-		}
-			
-		// if seeder exist check wether should be overwriten
-		if(!$this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
-			return;
+		foreach ($tables as $table) {
+			// generate file and class name based on name of the table
+			list($fileName, $className) = $this->generateFileName($table);
+
+			// if file does not exist or force option is turned on generate seeder
+			if(!\File::exists($fileName) || $force) {
+				$this->printResult(app('iseed')->generateSeed($table), $table);
+				continue;
+			}
+
+			if($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
+				// if user said yes overwrite old seeder
+				$this->printResult(app('iseed')->generateSeed($table), $table);
+			}
 		}
 
-		// if user said yes overwrite old seeder
-		$this->printResult(app('iseed')->generateSeed($this->argument('table')), $this->argument('table'));
+		return;
 	}
 
 	/**
@@ -68,7 +72,7 @@ class IseedCommand extends Command {
 	protected function getArguments()
 	{
 		return array(
-			array('table', InputArgument::REQUIRED, 'table name'),
+			array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
 		);
 	}
 
@@ -81,6 +85,7 @@ class IseedCommand extends Command {
 	{
 		return array(
 			array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
+			array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
 		);
 	}
 
@@ -115,7 +120,7 @@ class IseedCommand extends Command {
     	}
 
 		// Generate class name and file name
-		$className = app('iseed')->generateClassName($this->argument('table'));
+		$className = app('iseed')->generateClassName($table);
 		$seedPath = app_path() . \Config::get('iseed::path');
 		return [$seedPath . '/' . $className . '.php', $className . '.php'];
 
