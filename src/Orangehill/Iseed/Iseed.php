@@ -24,7 +24,7 @@ class Iseed {
 		$data = $this->getData($table);
 
 		// Repack the data
-		$dataArray = $this->repackSeedData($data);
+		$dataArray = $this->repackSeedData($data,$table);
 
 		// Generate class name
 		$className = $this->generateClassName($table);
@@ -67,24 +67,45 @@ class Iseed {
 		return \DB::table($table)->get();
 	}
 
+
+	public function getDefaultVal($column,$table)
+	{
+		try
+		{
+			$defaultVal = \DB::select(\DB::raw('SELECT DEFAULT('.$column.') as "default" FROM '.$table.' LIMIT 1'));
+			$defaultVal = get_object_vars($defaultVal[0]);
+			return $defaultVal['default'];
+		}
+
+		catch(\Exception $e)
+		{
+			return '';
+		}
+	}
+
 	/**
 	 * Repacks data read from the database
 	 * @param  array|object $data
 	 * @return array
 	 */
-	public function repackSeedData($data)
+	public function repackSeedData($data,$table)
 	{
-    	$dataArray = array();
-    	if(is_array($data)) {
+	     $dataArray = array();
+	     if(is_array($data)) {
 			foreach ($data as $row) {
 				$rowArray = array();
 				foreach($row as $columnName => $columnValue) {
-					 $rowArray[$columnName] = $columnValue;
+					if($columnValue==''){
+						$rowArray[$columnName] = $this->getDefaultVal($columnName,$table);
+					}
+					else {
+						$rowArray[$columnName] = $columnValue;
+					}
 				}
 				$dataArray[] = $rowArray;
 			}
-    	}
-		return $dataArray;
+	     }
+	return $dataArray;
 	}
 
 	/**
