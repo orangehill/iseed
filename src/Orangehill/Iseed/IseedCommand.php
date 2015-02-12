@@ -44,22 +44,23 @@ class IseedCommand extends Command {
 
 		$force = $this->option('force');
 		$tables = explode(",", $this->argument('tables'));
+		$database = $this->option('database');
 
 		foreach ($tables as $table) {
 			$table = trim($table);
-			
+
 			// generate file and class name based on name of the table
 			list($fileName, $className) = $this->generateFileName($table);
 
 			// if file does not exist or force option is turned on generate seeder
 			if(!\File::exists($fileName) || $force) {
-				$this->printResult(app('iseed')->generateSeed($table), $table);
+				$this->printResult(app('iseed')->generateSeed($table, $database), $table);
 				continue;
 			}
 
 			if($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
 				// if user said yes overwrite old seeder
-				$this->printResult(app('iseed')->generateSeed($table), $table);
+				$this->printResult(app('iseed')->generateSeed($table, $database), $table);
 			}
 		}
 
@@ -88,6 +89,7 @@ class IseedCommand extends Command {
 		return array(
 			array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
 			array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
+			array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
 		);
 	}
 

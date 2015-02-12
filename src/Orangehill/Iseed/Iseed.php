@@ -4,6 +4,8 @@ use Illuminate\Filesystem\Filesystem;
 
 class Iseed {
 
+	protected $connection;
+
 	public function __construct(Filesystem $filesystem = null)
 	{
 		$this->files = $filesystem ?: new Filesystem;
@@ -15,8 +17,10 @@ class Iseed {
 	 * @return bool
 	 * @throws Orangehill\Iseed\TableNotFoundException
 	 */
-	public function generateSeed($table)
+	public function generateSeed($table, $database)
 	{
+		$this->connection = $database;
+
 		// Check if table exists
 		if (!$this->hasTable($table)) throw new TableNotFoundException("Table $table was not found.");
 
@@ -64,7 +68,7 @@ class Iseed {
 	 */
 	public function getData($table)
 	{
-		return \DB::table($table)->get();
+		return \DB::connection($this->connection)->table($table)->get();
 	}
 
 	/**
@@ -94,7 +98,7 @@ class Iseed {
 	 */
 	public function hasTable($table)
 	{
-		return \Schema::hasTable($table);
+		return \Schema::connection($this->connection)->hasTable($table);
 	}
 
 	/**
