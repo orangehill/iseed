@@ -19,8 +19,12 @@ class Iseed {
 	 * @return bool
 	 * @throws Orangehill\Iseed\TableNotFoundException
 	 */
-	public function generateSeed($table, $database = \Config::get('database.default'), $max = 0)
+	public function generateSeed($table, $database = null, $max = 0)
 	{
+		if(!$database) {
+			$database = \Config::get('database.default');
+		}
+		
 		$this->connection = $database;
 
 		// Check if table exists
