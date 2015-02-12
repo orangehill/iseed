@@ -2093,17 +2093,6 @@ class IseedTest extends PHPUnit_Framework_TestCase {
         $hasTable->generateSeed('nonexisting','database');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Database [nonexisting] not configured.
-     */
-    public function testDatabaseNotFoundException()
-    {
-        $hasTable = m::mock('Orangehill\Iseed\Iseed[hasTable]')->makePartial();
-        $hasTable->shouldReceive('hasTable')->once()->andReturn(false);
-        $hasTable->generateSeed('table','nonexisting');
-    }
-
     public function testRepacksSeedData()
     {
         $data = array(
