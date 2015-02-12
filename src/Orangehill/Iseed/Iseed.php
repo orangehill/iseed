@@ -14,10 +14,12 @@ class Iseed {
 	/**
 	 * Generates a seed file.
 	 * @param  string  $table
+	 * @param  string  $database
+	 * @param  int 	   $max
 	 * @return bool
 	 * @throws Orangehill\Iseed\TableNotFoundException
 	 */
-	public function generateSeed($table, $database)
+	public function generateSeed($table, $database = \Config::get('database.default'), $max = 0)
 	{
 		$this->connection = $database;
 
@@ -25,7 +27,7 @@ class Iseed {
 		if (!$this->hasTable($table)) throw new TableNotFoundException("Table $table was not found.");
 
 		// Get the data
-		$data = $this->getData($table);
+		$data = $this->getData($table, $max);
 
 		// Repack the data
 		$dataArray = $this->repackSeedData($data);
@@ -66,9 +68,13 @@ class Iseed {
 	 * @param  string $table
 	 * @return Array
 	 */
-	public function getData($table)
-	{
-		return \DB::connection($this->connection)->table($table)->get();
+	public function getData($table, $max)
+	{	
+		if(!$max) {
+			return \DB::connection($this->connection)->table($table)->get();
+		}
+
+		return \DB::connection($this->connection)->table($table)->limit($max)->get();
 	}
 
 	/**
@@ -137,6 +143,7 @@ class Iseed {
 	public function populateStub($class, $stub, $table, $data, $chunkSize = null)
 	{
         $chunkSize = $chunkSize ?: \Config::get('iseed::chunk_size');
+
         $inserts = '';
         $chunks = array_chunk($data, $chunkSize);
         foreach ($chunks as $chunk) {

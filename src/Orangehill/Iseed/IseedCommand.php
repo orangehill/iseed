@@ -43,7 +43,12 @@ class IseedCommand extends Command {
 		}
 
 		$tables = explode(",", $this->argument('tables'));
+		$chunkSize = intval($this->option('max'));
 
+		if($chunkSize < 1) {
+			$chunkSize = null;
+		}
+		
 		foreach ($tables as $table) {
 			$table = trim($table);
 
@@ -52,13 +57,13 @@ class IseedCommand extends Command {
 
 			// if file does not exist or force option is turned on generate seeder
 			if(!\File::exists($fileName) || $this->option('force')) {
-				$this->printResult(app('iseed')->generateSeed($table, $this->option('database')), $table);
+				$this->printResult(app('iseed')->generateSeed($table, $this->option('database'), $chunkSize), $table);
 				continue;
 			}
 
 			if($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
 				// if user said yes overwrite old seeder
-				$this->printResult(app('iseed')->generateSeed($table, $this->option('database')), $table);
+				$this->printResult(app('iseed')->generateSeed($table, $this->option('database'), $chunkSize), $table);
 			}
 		}
 
@@ -88,6 +93,7 @@ class IseedCommand extends Command {
 			array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
 			array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
 			array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
+			array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
 		);
 	}
 

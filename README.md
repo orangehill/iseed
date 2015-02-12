@@ -22,7 +22,7 @@
 
 ## Usage
 
-To generate a seed file for your users table simply call: `\Iseed::generateSeed('users');`
+To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments. 
 
 This will create a file inside a `/app/database/seeds`, with the contents similar to following example:
 
@@ -118,7 +118,9 @@ In case you try to generate seed file that already exists command will ask you a
 
 If you wish to clear iSeed template you can use Artisan Command Option `--clean`, e.g. `php artisan iseed users --clean`. This will clean template from `app/database/seeds/DatabaseSeeder.php` before creating new seed class.
 
-You can specify db connection that will be used for creation of new seed files by using Artisan Command Option `--database=connection_name`, e.g. `php artisan iseed users --database=mysql2`
+You can specify db connection that will be used for creation of new seed files by using Artisan Command Option `--database=connection_name`, e.g. `php artisan iseed users --database=mysql2`. 
+
+To limit number of rows that will be exported from table use Artisan Command Option `--max=number_of_rows`
 
 To (re)seed the database go to the Terminal and run Laravel's `db:seed command` (`php artisan db:seed`).
 
