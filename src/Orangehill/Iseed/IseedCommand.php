@@ -46,6 +46,8 @@ class IseedCommand extends Command {
 		$tables = explode(",", $this->argument('tables'));
 
 		foreach ($tables as $table) {
+			$table = trim($table);
+			
 			// generate file and class name based on name of the table
 			list($fileName, $className) = $this->generateFileName($table);
 

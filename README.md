@@ -112,7 +112,9 @@ If you wish you can define custom iSeed template in which all the calls will be 
 
 	}
 
-Alternatively you can run Iseed from the command line using Artisan, e.g. `php artisan iseed users`.
+Alternatively you can run Iseed from the command line using Artisan, e.g. `php artisan iseed users`. For generation of multiple seed files comma separated list of table names should be send as an argument for command, e.g. `php artisan iseed users,posts,groups`.
+
+In case you try to generate seed file that already exists command will ask you a question whether you want to overwrite it or not. If you wish to overwrite it by default use `--force` Command Option, e.g. `php artisan iseed users --force`.
 
 If you wish to clear iSeed template you can use Artisan Command Option `--clean`, e.g. `php artisan iseed users --clean`. This will clean template from `app/database/seeds/DatabaseSeeder.php` before creating new seed class.
 
