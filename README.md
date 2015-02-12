@@ -120,7 +120,7 @@ If you wish to clear iSeed template you can use Artisan Command Option `--clean`
 
 You can specify db connection that will be used for creation of new seed files by using Artisan Command Option `--database=connection_name`, e.g. `php artisan iseed users --database=mysql2`. 
 
-To limit number of rows that will be exported from table use Artisan Command Option `--max=number_of_rows`
+To limit number of rows that will be exported from table use Artisan Command Option `--max=number_of_rows`, e.g. `php artisan iseed users --max=10`. If you use this option while exporting multiple tables specified limit will be applied to all of them.  
 
 To (re)seed the database go to the Terminal and run Laravel's `db:seed command` (`php artisan db:seed`).
 
