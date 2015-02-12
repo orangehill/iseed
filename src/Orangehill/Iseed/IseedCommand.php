@@ -37,11 +37,26 @@ class IseedCommand extends Command {
 	 */
 	public function fire()
 	{
-		if($this->option('clean'))
-		{
+		// if clean option is checked empty iSeed template in DatabaseSeeder.php
+		if($this->option('clean')) {
 			app('iseed')->cleanSection();
 		}
 
+		// generate file and class name based on name of the table
+		list($fileName, $className) = $this->generateFileName($this->argument('table'));
+
+		// if file does not exist generate seeder
+		if(!\File::exists($fileName)) {
+			$this->printResult(app('iseed')->generateSeed($this->argument('table')), $this->argument('table'));
+			return;
+		}
+			
+		// if seeder exist check wether should be overwriten
+		if(!$this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
+			return;
+		}
+
+		// if user said yes overwrite old seeder
 		$this->printResult(app('iseed')->generateSeed($this->argument('table')), $this->argument('table'));
 	}
 
@@ -87,4 +102,22 @@ class IseedCommand extends Command {
         $this->error("Could not create seed file from table {$table}");
     }
 
+    /**
+     * Generate file name, to be used in test wether seed file already exist
+     *
+     * @param  string $table
+     * @return string
+     */
+    protected function generateFileName($table)
+    {
+    	if(!\Schema::hasTable($table)) {
+    		throw new TableNotFoundException("Table $table was not found.");
+    	}
+
+		// Generate class name and file name
+		$className = app('iseed')->generateClassName($this->argument('table'));
+		$seedPath = app_path() . \Config::get('iseed::path');
+		return [$seedPath . '/' . $className . '.php', $className . '.php'];
+
+    }
 }
