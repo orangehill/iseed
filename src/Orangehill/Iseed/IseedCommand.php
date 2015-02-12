@@ -42,9 +42,7 @@ class IseedCommand extends Command {
 			app('iseed')->cleanSection();
 		}
 
-		$force = $this->option('force');
 		$tables = explode(",", $this->argument('tables'));
-		$database = $this->option('database');
 
 		foreach ($tables as $table) {
 			$table = trim($table);
@@ -53,14 +51,14 @@ class IseedCommand extends Command {
 			list($fileName, $className) = $this->generateFileName($table);
 
 			// if file does not exist or force option is turned on generate seeder
-			if(!\File::exists($fileName) || $force) {
-				$this->printResult(app('iseed')->generateSeed($table, $database), $table);
+			if(!\File::exists($fileName) || $this->option('force')) {
+				$this->printResult(app('iseed')->generateSeed($table, $this->option('database')), $table);
 				continue;
 			}
 
 			if($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
 				// if user said yes overwrite old seeder
-				$this->printResult(app('iseed')->generateSeed($table, $database), $table);
+				$this->printResult(app('iseed')->generateSeed($table, $this->option('database')), $table);
 			}
 		}
 
