@@ -1,34 +1,40 @@
-**Inverse seed generator (iSeed)** is a Laravel 4 package that provides a method to generate a new seed file based on data from the existing database table.
+**Inverse seed generator (iSeed)** is a Laravel package that provides a method to generate a new seed file based on data from the existing database table.
 
 [![Build Status](https://travis-ci.org/orangehill/iseed.png)](http://travis-ci.org/orangehill/iseed)
 [![Latest Stable Version](https://poser.pugx.org/orangehill/iseed/v/stable.png)](https://packagist.org/packages/orangehill/iseed) [![Total Downloads](https://poser.pugx.org/orangehill/iseed/downloads.png)](https://packagist.org/packages/orangehill/iseed)
 
 ## Installation
 
-1) Edit your project's `composer.json` file to require `orangehill/iseed`.
+1) For Laravel 5 instalation edit your project's `composer.json` file to require `orangehill/iseed`.
 
     "require": {
-		"laravel/framework": "4.0.*",
 		"orangehill/iseed": "dev-master"
 	}
 
-2) Update Composer from the CLI:
+If you wish to install it on Laravel 4 you should require 1.1 version:
+
+    "require": {
+		"orangehill/iseed": "1.1"
+	}
+
+2) Add the service provider by opening a `app/config/app.php` file, and adding a new item to the `providers` array.
+
+    'Orangehill\Iseed\IseedServiceProvider'
+
+3) Update Composer from the CLI:
 
     composer update
 
-3) Once this operation completes, add the service provider by opening a `app/config/app.php` file, and adding a new item to the `providers` array.
-
-    'Orangehill\Iseed\IseedServiceProvider'
 
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments. 
 
-This will create a file inside a `/app/database/seeds`, with the contents similar to following example:
+This will create a file inside a `/database/seeds` (`/app/database/seeds` for Laravel 4), with the contents similar to following example:
 
 	<?php
 
-	// File: /app/database/seeds/UsersTableSeeder.php
+	// File: /database/seeds/UsersTableSeeder.php
 
 	class UsersTableSeeder extends Seeder {
 
@@ -80,13 +86,13 @@ This will create a file inside a `/app/database/seeds`, with the contents simila
 
 	}
 
-This command will also update `app/database/seeds/DatabaseSeeder.php` to include a call to this newly generated seed class. 
+This command will also update `/database/seeds/DatabaseSeeder.php` (`/app/database/seeds/DatabaseSeeder.php` for Laravel 4) to include a call to this newly generated seed class. 
 
-If you wish you can define custom iSeed template in which all the calls will be placed. You can do this by using `#iseed_start` and `#iseed_end` templates anywhere  within `app/database/seeds/DatabaseSeeder.php`, for example: 
+If you wish you can define custom iSeed template in which all the calls will be placed. You can do this by using `#iseed_start` and `#iseed_end` templates anywhere  within `/database/seeds/DatabaseSeeder.php` (`/app/database/seeds/DatabaseSeeder.php` for Laravel 4), for example: 
 
 	<?php
 
-	// File: /app/database/seeds/DatabaseSeeder.php
+	// File: /database/seeds/DatabaseSeeder.php
 	class DatabaseSeeder extends Seeder {
 
 		/**
