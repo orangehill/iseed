@@ -54,7 +54,7 @@ class IseedCommand extends Command {
 
 			// generate file and class name based on name of the table
 			list($fileName, $className) = $this->generateFileName($table);
-
+			
 			// if file does not exist or force option is turned on generate seeder
 			if(!\File::exists($fileName) || $this->option('force')) {
 				$this->printResult(app('iseed')->generateSeed($table, $this->option('database'), $chunkSize), $table);
@@ -129,7 +129,7 @@ class IseedCommand extends Command {
 
 		// Generate class name and file name
 		$className = app('iseed')->generateClassName($table);
-		$seedPath = app_path() . \Config::get('iseed::path');
+		$seedPath = base_path() . config('iseed::config.path');
 		return [$seedPath . '/' . $className . '.php', $className . '.php'];
 
     }

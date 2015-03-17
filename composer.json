@@ -10,13 +10,11 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0",
-        "illuminate/support": "4.x"
+        "php": ">=5.3.0"
     },
     "require-dev": {
         "mockery/mockery": "dev-master",
-        "illuminate/console": "4.x",
-        "illuminate/filesystem": "4.x"
+        "illuminate/filesystem": "5.x"
     },
     "autoload": {
         "psr-0": {

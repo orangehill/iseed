@@ -1,6 +1,7 @@
 <?php namespace Orangehill\Iseed;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
 
 class Iseed {
 
@@ -22,7 +23,7 @@ class Iseed {
 	public function generateSeed($table, $database = null, $max = 0)
 	{
 		if(!$database) {
-			$database = \Config::get('database.default');
+			$database = config('database.default');
 		}
 		
 		$this->connection = $database;
@@ -64,7 +65,7 @@ class Iseed {
 	 */
 	public function getSeedPath()
 	{
-		return app_path() . \Config::get('iseed::path');
+		return base_path() . config('iseed::config.path');
 	}
 
 	/**
@@ -146,8 +147,7 @@ class Iseed {
 	 */
 	public function populateStub($class, $stub, $table, $data, $chunkSize = null)
 	{
-        $chunkSize = $chunkSize ?: \Config::get('iseed::chunk_size');
-
+        $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
         $inserts = '';
         $chunks = array_chunk($data, $chunkSize);
         foreach ($chunks as $chunk) {
@@ -232,7 +232,7 @@ class Iseed {
     */
 	public function cleanSection()
 	{
-		$databaseSeederPath = app_path() . \Config::get('iseed::path') . '/DatabaseSeeder.php';
+		$databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
 
 		$content = $this->files->get($databaseSeederPath);
 
@@ -249,7 +249,7 @@ class Iseed {
     */
     public function updateDatabaseSeederRunMethod($className)
     {
-    	$databaseSeederPath = app_path() . \Config::get('iseed::path') . '/DatabaseSeeder.php';
+    	$databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
 
         $content = $this->files->get($databaseSeederPath);
         if(strpos($content, "\$this->call('{$className}')")===false)
