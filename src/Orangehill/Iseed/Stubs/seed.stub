@@ -12,7 +12,8 @@ class {{class}} extends Seeder {
 	public function run()
 	{
 		\DB::table('{{table}}')->delete();
-        {{insert_statements}}
+        	{{insert_statements}};
+        	{{update_seq_count}};
 	}
 
 }
