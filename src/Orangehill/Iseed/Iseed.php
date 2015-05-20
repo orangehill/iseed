@@ -161,6 +161,9 @@ class Iseed {
 		}
 
 		$stub = str_replace('{{insert_statements}}', $inserts, $stub);
+		
+		$counterStatement = sprintf("\n\t\tSELECT setval('%s', coalesce((select max(id)+1 from %s), 1))",$sequence_name,$table);
+                $stub = str_replace('{{update_counter_statement}}',$counterStatement, $stub);
 
 		return $stub;
 	}
