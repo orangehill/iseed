@@ -162,8 +162,13 @@ class Iseed {
 
 		$stub = str_replace('{{insert_statements}}', $inserts, $stub);
 		$sequence_name = $table.'_id_seq';
-		$counterStatement = sprintf("\n\t\tSELECT setval('%s', coalesce((select max(id)+1 from %s), 1))",$sequence_name,$table);
-                $stub = str_replace('{{update_seq_count}}',$counterStatement, $stub);
+
+        	$lastUpdatedValue = \DB::table($table)->select(\DB::raw("max(id)+1 as max"))->first();
+
+        	$lastUpdatedValue = $lastUpdatedValue->max;
+
+		$counterStatement = sprintf("\n\t\t\DB::statement(\"ALTER SEQUENCE IF EXISTS %s RESTART WITH %s\")",$sequence_name,$lastUpdatedValue);
+        	$stub = str_replace('{{update_seq_count}}',$counterStatement, $stub);
 
 		return $stub;
 	}
