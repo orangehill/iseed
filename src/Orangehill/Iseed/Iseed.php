@@ -147,23 +147,59 @@ class Iseed {
 	 */
 	public function populateStub($class, $stub, $table, $data, $chunkSize = null)
 	{
-        $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
-        $inserts = '';
-        $chunks = array_chunk($data, $chunkSize);
-        foreach ($chunks as $chunk) {
-            $inserts .= sprintf("\n\t\t\DB::table('%s')->insert(%s);", $table, $this->prettifyArray($chunk));
-        }
-        
+	        $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
+	        $inserts = '';
+	        $chunks = array_chunk($data, $chunkSize);
+	        foreach ($chunks as $chunk) {
+	            $inserts .= sprintf("\n\t\t\DB::table('%s')->insert(%s);", $table, $this->prettifyArray($chunk));
+	        }
+	        
 		$stub = str_replace('{{class}}', $class, $stub);
-
+	
 		if (!is_null($table)) {
 			$stub = str_replace('{{table}}', $table, $stub);
 		}
-
+	
 		$stub = str_replace('{{insert_statements}}', $inserts, $stub);
+		
+		$indexKey = $this->_getIndexKey($table);
+	
+		$counterStatement = '';
+
+		if( ! empty($indexKey))
+		{
+			$sequence_name = $table.'_'.$indexKey.'_seq';
+	
+			$lastUpdatedValue = \DB::table($table)->select(\DB::raw("max($indexKey)+1 as max"))->first();
+	
+	    		$lastUpdatedValue = $lastUpdatedValue->max;
+			if( ! empty($lastUpdatedValue))
+		    	{
+		    		$counterStatement = sprintf("\n\t\t\DB::statement(\"ALTER SEQUENCE IF EXISTS %s RESTART WITH %s\");",$sequence_name,$lastUpdatedValue);
+		    	}
+		}
+
+    		$stub = str_replace('{{update_seq_count}}',$counterStatement, $stub);
 
 		return $stub;
 	}
+    
+    private function _getIndexKey($table)
+    {
+    	$query = "SELECT a.attname
+				FROM   pg_index i
+				JOIN   pg_attribute a ON a.attrelid = i.indrelid
+				                     AND a.attnum = ANY(i.indkey)
+				WHERE  i.indrelid = '$table'::regclass
+				AND    i.indisprimary";
+
+		$primaryKey = \DB::select($query);
+		if( ! empty($primaryKey))
+		{
+			return $primaryKey[0]->attname;
+		}
+		return NULL;
+    }
     
 	/**
 	 * Create the full path name to the seed file.
