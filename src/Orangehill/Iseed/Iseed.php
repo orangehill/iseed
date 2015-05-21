@@ -173,8 +173,10 @@ class Iseed {
 			$lastUpdatedValue = \DB::table($table)->select(\DB::raw("max($indexKey)+1 as max"))->first();
 	
 	    		$lastUpdatedValue = $lastUpdatedValue->max;
-	
-			$counterStatement = sprintf("\n\t\t\DB::statement(\"ALTER SEQUENCE IF EXISTS %s RESTART WITH %s\")",$sequence_name,$lastUpdatedValue);
+			if( ! empty($lastUpdatedValue))
+		    	{
+		    		$counterStatement = sprintf("\n\t\t\DB::statement(\"ALTER SEQUENCE IF EXISTS %s RESTART WITH %s\");",$sequence_name,$lastUpdatedValue);
+		    	}
 		}
 
     		$stub = str_replace('{{update_seq_count}}',$counterStatement, $stub);
