@@ -53,7 +53,7 @@ class IseedCommand extends Command {
 			$table = trim($table);
 
 			// generate file and class name based on name of the table
-			list($fileName, $className) = $this->generateFileName($table);
+			list($fileName, $className) = $this->generateFileName($table,$this->option('database'));
 			
 			// if file does not exist or force option is turned on generate seeder
 			if(!\File::exists($fileName) || $this->option('force')) {
@@ -121,16 +121,20 @@ class IseedCommand extends Command {
      * @param  string $table
      * @return string
      */
-    protected function generateFileName($table)
+    protected function generateFileName($table,$database)
     {
-    	if(!\Schema::hasTable($table)) {
-    		throw new TableNotFoundException("Table $table was not found.");
-    	}
+      if(!$database) {
+        $database = config('database.default');
+      }
 
-		// Generate class name and file name
-		$className = app('iseed')->generateClassName($table);
-		$seedPath = base_path() . config('iseed::config.path');
-		return [$seedPath . '/' . $className . '.php', $className . '.php'];
+      if(!\Schema::connection($database)->hasTable($table)) {
+        throw new TableNotFoundException("Table $table was not found.");
+      }
+
+    // Generate class name and file name
+    $className = app('iseed')->generateClassName($table);
+    $seedPath = base_path() . config('iseed::config.path');
+    return [$seedPath . '/' . $className . '.php', $className . '.php'];
 
     }
 }

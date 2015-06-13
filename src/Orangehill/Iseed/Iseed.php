@@ -50,7 +50,7 @@ class Iseed {
 		$seedsPath = $this->getPath($className, $seedPath);
 
 		// Get a populated stub file
-		$seedContent = $this->populateStub($className, $stub, $table, $dataArray);
+		$seedContent = $this->populateStub($className, $stub, $table, $dataArray,$database);
 
 		// Save a populated stub
 		$this->files->put($seedsPath, $seedContent);
@@ -145,19 +145,22 @@ class Iseed {
 	 * @param  int     $chunkSize
 	 * @return string
 	 */
-	public function populateStub($class, $stub, $table, $data, $chunkSize = null)
+	public function populateStub($class, $stub, $table, $data,$database, $chunkSize = null)
 	{
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
         $inserts = '';
         $chunks = array_chunk($data, $chunkSize);
         foreach ($chunks as $chunk) {
-            $inserts .= sprintf("\n\t\t\DB::table('%s')->insert(%s);", $table, $this->prettifyArray($chunk));
+            $inserts .= sprintf("\n\t\t\DB::connection('%s')table('%s')->insert(%s);",$database, $table, $this->prettifyArray($chunk));
         }
         
 		$stub = str_replace('{{class}}', $class, $stub);
 
 		if (!is_null($table)) {
 			$stub = str_replace('{{table}}', $table, $stub);
+		}
+		if (!is_null($database)) {
+			$stub = str_replace('{{database}}', $database, $stub);
 		}
 
 		$stub = str_replace('{{insert_statements}}', $inserts, $stub);
