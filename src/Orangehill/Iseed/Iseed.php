@@ -50,7 +50,7 @@ class Iseed {
 		$seedsPath = $this->getPath($className, $seedPath);
 
 		// Get a populated stub file
-		$seedContent = $this->populateStub($className,$database, $stub, $table, $dataArray);
+		$seedContent = $this->populateStub($className, $stub, $table, $dataArray,$database);
 
 		// Save a populated stub
 		$this->files->put($seedsPath, $seedContent);
@@ -158,6 +158,9 @@ class Iseed {
 
 		if (!is_null($table)) {
 			$stub = str_replace('{{table}}', $table, $stub);
+		}
+		if (!is_null($database)) {
+			$stub = str_replace('{{database}}', $database, $stub);
 		}
 
 		$stub = str_replace('{{insert_statements}}', $inserts, $stub);
