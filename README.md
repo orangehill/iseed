@@ -128,6 +128,10 @@ You can specify db connection that will be used for creation of new seed files b
 
 To limit number of rows that will be exported from table use Artisan Command Option `--max=number_of_rows`, e.g. `php artisan iseed users --max=10`. If you use this option while exporting multiple tables specified limit will be applied to all of them.  
 
+To export database complete use `--all=true` and instead of the names of the tables indicates `all`. Example: 
+
+    php artisan iseed --all=true all
+
 To (re)seed the database go to the Terminal and run Laravel's `db:seed command` (`php artisan db:seed`).
 
 Please note that some users encountered a problem with large DB table exports ([error when seeding from table with many records](https://github.com/orangehill/iseed/issues/4)). The issue was solved by splitting input data into smaller chunks of elements per insert statement. As you may need to change the chunk size value in some extreme cases where DB table has a large number of columns, the chunk size is configurable in iSeed's `config.php` file:

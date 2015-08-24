@@ -112,6 +112,29 @@ class Iseed {
 		return \Schema::connection($this->connection)->hasTable($table);
 	}
 
+    /**
+     * Get all tables names in array
+     *
+     * @return array
+     */
+    public function getAllTableName (){
+
+        $tables = \DB::select('SHOW TABLES');
+
+        $connection= \Config::get('database.default');
+        $databaseName = \Config::get('database.connections.'.$connection.'.database');
+
+        $tablesFormatted = [];
+
+        foreach ($tables as $table){
+            $field = 'Tables_in_'.$databaseName;
+            $tablesFormatted [] = $table->$field;
+        }
+
+        return $tablesFormatted;
+
+    }
+
 	/**
 	 * Generates a seed class name (also used as a filename)
 	 * @param  string  $table

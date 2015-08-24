@@ -43,6 +43,11 @@ class IseedCommand extends Command {
 		}
 
 		$tables = explode(",", $this->argument('tables'));
+
+        if ($this->checkSeedAllDatabase()){
+            $tables = app('iseed')->getAllTableName();
+        }
+
 		$chunkSize = intval($this->option('max'));
 
 		if($chunkSize < 1) {
@@ -94,8 +99,25 @@ class IseedCommand extends Command {
 			array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
 			array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
 			array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
+            array('all', null, InputOption::VALUE_OPTIONAL, 'seed all tables', null),
 		);
 	}
+
+    /**
+     * Check if process all tables
+     *
+     * @return bool
+     */
+    protected function checkSeedAllDatabase (){
+
+        $checkOptionAll = ($this->option('all') === 'true');
+        $checkTableAll = ($this->argument('tables') === "all");
+
+        if ( ($checkOptionAll) and ($checkTableAll) ){
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Provide user feedback, based on success or not.
