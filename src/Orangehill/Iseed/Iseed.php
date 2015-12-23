@@ -20,19 +20,19 @@ class Iseed {
 	 * @return bool
 	 * @throws Orangehill\Iseed\TableNotFoundException
 	 */
-	public function generateSeed($table, $database = null, $max = 0)
+	public function generateSeed($table, $database = null, $max = 0, $exColumns = null)
 	{
 		if(!$database) {
 			$database = config('database.default');
 		}
-		
+
 		$this->connection = $database;
 
 		// Check if table exists
 		if (!$this->hasTable($table)) throw new TableNotFoundException("Table $table was not found.");
 
 		// Get the data
-		$data = $this->getData($table, $max);
+		$data = $this->getData($table, $max, $exColumns);
 
 		// Repack the data
 		$dataArray = $this->repackSeedData($data);
@@ -73,8 +73,14 @@ class Iseed {
 	 * @param  string $table
 	 * @return Array
 	 */
-	public function getData($table, $max)
-	{	
+	public function getData($table, $max, $exColumns=null)
+	{
+		if(!empty($exColumns)) {
+			$allColumns = \DB::connection($this->connection)->getSchemaBuilder()->getColumnListing($table);
+			$result = \DB::connection($this->connection)->table($table)->select(array_diff($allColumns, $exColumns))->get();
+			return $result;
+		}
+
 		if(!$max) {
 			return \DB::connection($this->connection)->table($table)->get();
 		}
@@ -147,13 +153,14 @@ class Iseed {
 	 */
 	public function populateStub($class, $stub, $table, $data, $chunkSize = null)
 	{
-        $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
-        $inserts = '';
-        $chunks = array_chunk($data, $chunkSize);
-        foreach ($chunks as $chunk) {
-            $inserts .= sprintf("\n\t\t\DB::table('%s')->insert(%s);", $table, $this->prettifyArray($chunk));
-        }
-        
+		$chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
+		$inserts = '';
+		$chunks = array_chunk($data, $chunkSize);
+
+		foreach ($chunks as $chunk) {
+			$inserts .= sprintf("\n\t\t\\DB::connection('%s')->table('%s')->insert(%s);", $this->connection, $table, $this->prettifyArray($chunk));
+		}
+
 		$stub = str_replace('{{class}}', $class, $stub);
 
 		if (!is_null($table)) {
@@ -162,9 +169,11 @@ class Iseed {
 
 		$stub = str_replace('{{insert_statements}}', $inserts, $stub);
 
+		$stub = str_replace('{{connection}}', $this->connection, $stub);
+
 		return $stub;
 	}
-    
+
 	/**
 	 * Create the full path name to the seed file.
 	 * @param  string  $name

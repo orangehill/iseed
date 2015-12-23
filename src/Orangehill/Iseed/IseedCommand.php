@@ -44,26 +44,27 @@ class IseedCommand extends Command {
 
 		$tables = explode(",", $this->argument('tables'));
 		$chunkSize = intval($this->option('max'));
+		$exColumns = explode(",", $this->option('exColumns'));
 
 		if($chunkSize < 1) {
 			$chunkSize = null;
 		}
-		
+
 		foreach ($tables as $table) {
 			$table = trim($table);
 
 			// generate file and class name based on name of the table
 			list($fileName, $className) = $this->generateFileName($table);
-			
+
 			// if file does not exist or force option is turned on generate seeder
 			if(!\File::exists($fileName) || $this->option('force')) {
-				$this->printResult(app('iseed')->generateSeed($table, $this->option('database'), $chunkSize), $table);
+				$this->printResult(app('iseed')->generateSeed($table, $this->option('database'), $chunkSize, $exColumns), $table);
 				continue;
 			}
 
 			if($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
 				// if user said yes overwrite old seeder
-				$this->printResult(app('iseed')->generateSeed($table, $this->option('database'), $chunkSize), $table);
+				$this->printResult(app('iseed')->generateSeed($table, $this->option('database'), $chunkSize, $exColumns), $table);
 			}
 		}
 
@@ -94,6 +95,7 @@ class IseedCommand extends Command {
 			array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
 			array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
 			array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
+			array('exColumns', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
 		);
 	}
 
@@ -123,6 +125,10 @@ class IseedCommand extends Command {
      */
     protected function generateFileName($table)
     {
+	    /*
+	     * This check seems to break when you use a different environment as it happens before the connection is set
+	     * I had to comment this out to get it working with connection other than the default one
+	     */
     	if(!\Schema::hasTable($table)) {
     		throw new TableNotFoundException("Table $table was not found.");
     	}
