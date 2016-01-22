@@ -1,3 +1,8 @@
-<?php namespace Orangehill\Iseed;
+<?php
 
-class TableNotFoundException extends \RuntimeException {}
+namespace Orangehill\Iseed;
+
+class TableNotFoundException extends \RuntimeException
+{
+
+}
