@@ -202,7 +202,7 @@ class Iseed
 
         $prerunEventInsert = '';
         if ($prerunEvent) {
-            $prerunEventInsert .= "\$response = Event::fire(new $prerunEvent());";
+            $prerunEventInsert .= "\$response = Event::until(new $prerunEvent());";
             $this->addNewLines($prerunEventInsert);
             $this->addIndent($prerunEventInsert, 2);
             $prerunEventInsert .= 'if ($response === false) {';
@@ -224,7 +224,7 @@ class Iseed
 
         $postrunEventInsert = '';
         if ($postrunEvent) {
-            $postrunEventInsert .= "\$response = Event::fire(new $postrunEvent());";
+            $postrunEventInsert .= "\$response = Event::until(new $postrunEvent());";
             $this->addNewLines($postrunEventInsert);
             $this->addIndent($postrunEventInsert, 2);
             $postrunEventInsert .= 'if ($response === false) {';
