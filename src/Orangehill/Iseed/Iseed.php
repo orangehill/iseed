@@ -222,6 +222,8 @@ class Iseed
             $stub = str_replace('{{table}}', $table, $stub);
         }
 
+        $stub = str_replace('{{database_name}}', $this->databaseName, $stub);
+        
         $postrunEventInsert = '';
         if ($postrunEvent) {
             $postrunEventInsert .= "\$response = Event::until(new $postrunEvent());";
