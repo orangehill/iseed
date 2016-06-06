@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/orangehill/iseed.png)](http://travis-ci.org/orangehill/iseed)
 [![Latest Stable Version](https://poser.pugx.org/orangehill/iseed/v/stable.png)](https://packagist.org/packages/orangehill/iseed) [![Total Downloads](https://poser.pugx.org/orangehill/iseed/downloads.png)](https://packagist.org/packages/orangehill/iseed)
+[![Analytics](https://ga-beacon.appspot.com/UA-1936460-35/welcome-page?useReferrer&flat)](https://github.com/igrigorik/ga-beacon)
 
 ## Installation
 
