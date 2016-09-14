@@ -6,12 +6,16 @@
 
 ## Installation
 
-1) For Laravel 5 instalation edit your project's `composer.json` file to require `orangehill/iseed`.
+1) Add `orangehill/iseed` to your composer file.
+
+#### Laravel 5
+For Laravel 5 installation edit your project's `composer.json` file to require `orangehill/iseed`.
 
     "require": {
 		"orangehill/iseed": "dev-master"
 	}
 
+#### Laravel 4
 If you wish to install it on Laravel 4 you should require 1.1 version:
 
     "require": {
