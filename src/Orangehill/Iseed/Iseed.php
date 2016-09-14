@@ -123,7 +123,7 @@ class Iseed {
 			$data = $data->toArray();
 		}
 		$dataArray = array();
-		if (is_array($data)) {
+		if (!empty($data)) {
 			foreach ($data as $row) {
 				$rowArray = array();
 				foreach ($row as $columnName => $columnValue) {
