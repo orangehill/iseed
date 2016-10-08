@@ -49,6 +49,10 @@ class IseedCommand extends Command
         $prerunEvents  = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
 
+        if(empty($tables)){
+            $tables = collect(\DB::select('SHOW TABLES'))->flatten();
+        }
+
         if ($chunkSize < 1) {
             $chunkSize = null;
         }
@@ -109,7 +113,7 @@ class IseedCommand extends Command
     protected function getArguments()
     {
         return array(
-            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
+            array('tables', InputArgument::OPTIONAL, 'comma separated string of table names'),
         );
     }
 
