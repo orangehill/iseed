@@ -49,10 +49,12 @@ class IseedCommand extends Command
         $prerunEvents  = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
 
-        $dbTables = \DB::select('SHOW TABLES');
-        foreach ($dbTables as $dbTable) {
-            foreach ($dbTable as $key => $value)
-                $tables[] = $value;
+        if(empty($tables)){
+            $tables = collect(\DB::select('SHOW TABLES'))
+                    ->pluck('Tables_in_' . env('DB_DATABASE'))
+                    ->reject(function ($value, $key) {
+                        return $value == 'migrations';
+                    });
         }
 
         if ($chunkSize < 1) {
