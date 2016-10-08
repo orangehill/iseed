@@ -49,8 +49,10 @@ class IseedCommand extends Command
         $prerunEvents  = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
 
-        if(empty($tables)){
-            $tables = collect(\DB::select('SHOW TABLES'))->flatten();
+        $dbTables = \DB::select('SHOW TABLES');
+        foreach ($dbTables as $dbTable) {
+            foreach ($dbTable as $key => $value)
+                $tables[] = $value;
         }
 
         if ($chunkSize < 1) {
