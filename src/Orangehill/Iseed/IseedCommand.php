@@ -49,14 +49,6 @@ class IseedCommand extends Command
         $prerunEvents  = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
 
-        if(empty($tables)){
-            $tables = collect(\DB::select('SHOW TABLES'))
-                    ->pluck('Tables_in_' . env('DB_DATABASE'))
-                    ->reject(function ($value, $key) {
-                        return $value == 'migrations';
-                    });
-        }
-
         if ($chunkSize < 1) {
             $chunkSize = null;
         }
@@ -78,7 +70,7 @@ class IseedCommand extends Command
             list($fileName, $className) = $this->generateFileName($table);
 
             // if file does not exist or force option is turned on generate seeder
-            if (!\File::exists($fileName) || $this->option('force')) {
+            if ($this->option('force') || !\File::exists($fileName)) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
@@ -98,7 +90,8 @@ class IseedCommand extends Command
                     app('iseed')->generateSeed(
                         $table,
                         $this->option('database'),
-                        $chunkSize, $prerunEvent,
+                        $chunkSize,
+                        $prerunEvent,
                         $postrunEvent
                     ),
                     $table
@@ -117,7 +110,7 @@ class IseedCommand extends Command
     protected function getArguments()
     {
         return array(
-            array('tables', InputArgument::OPTIONAL, 'comma separated string of table names'),
+            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
         );
     }
 
@@ -163,9 +156,9 @@ class IseedCommand extends Command
      */
     protected function generateFileName($table)
     {
-        if (!\Schema::hasTable($table)) {
-            throw new TableNotFoundException("Table $table was not found.");
-        }
+        //if (!\Schema::hasTable($table)) {
+        //    throw new TableNotFoundException("Table $table was not found.");
+        //}
 
         // Generate class name and file name
         $className = app('iseed')->generateClassName($table);
