@@ -44,17 +44,18 @@ class IseedCommand extends Command
             app('iseed')->cleanSection();
         }
 
-        $tables        = explode(",", $this->argument('tables'));
         $chunkSize     = intval($this->option('max'));
         $prerunEvents  = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));     
         
-        if(empty($tables)){
-            $tables = collect(\DB::select('SHOW TABLES'))
-                        ->pluck('Tables_in_' . env('DB_DATABASE'))
-                        ->reject(function ($value, $key) {
-                            return $value == 'migrations';
-                        });
+        if(empty($this->argument('tables'))){
+            $tables = array_map('reset', \DB::connection($this->option('database'))->select('SHOW TABLES'));
+            $tables = array_filter($tables ,function($var) {
+                return !in_array($var,explode(",", "migrations".$this->option('ignore')));
+            });
+        }
+        else {
+            $tables = explode(",", $this->argument('tables'));
         }
 
         if ($chunkSize < 1) {
@@ -133,6 +134,7 @@ class IseedCommand extends Command
             array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
             array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
             array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
+            array('ignore', null, InputOption::VALUE_OPTIONAL, 'comma separated string of tables to ignore', ""),
             array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
             array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),
             array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
