@@ -51,7 +51,7 @@ class IseedCommand extends Command
         if(empty($this->argument('tables'))){
             $tables = array_map('reset', \DB::connection($this->option('database'))->select('SHOW TABLES'));
             $tables = array_filter($tables ,function($var) {
-                return !in_array($var,explode(",", "migrations".$this->option('ignore')));
+                return !in_array($var,explode(",", "migrations,".$this->option('ignore')));
             });
         }
         else {
