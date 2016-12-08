@@ -47,7 +47,7 @@ class IseedCommand extends Command
         $tables        = explode(",", $this->argument('tables'));
         $chunkSize     = intval($this->option('max'));
         $prerunEvents  = explode(",", $this->option('prerun'));
-        $postrunEvents = explode(",", $this->option('postrun'));+        
+        $postrunEvents = explode(",", $this->option('postrun'));     
         
         if(empty($tables)){
             $tables = collect(\DB::select('SHOW TABLES'))
