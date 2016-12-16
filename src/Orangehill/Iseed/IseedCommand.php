@@ -44,10 +44,22 @@ class IseedCommand extends Command
             app('iseed')->cleanSection();
         }
 
-        $tables        = explode(",", $this->argument('tables'));
-        $chunkSize     = intval($this->option('max'));
-        $prerunEvents  = explode(",", $this->option('prerun'));
+        $tables = explode(",", $this->argument('tables'));
+        $chunkSize = intval($this->option('max'));
+        $prerunEvents = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
+
+        if (empty($tables) || $tables[0] === "") {
+            $tmpTables = collect(\DB::select('SHOW TABLES'));
+            foreach ($tmpTables as $key => $singleTable) {
+                $arrayTable = (array)$singleTable;
+                $tables[$key] = $arrayTable["Tables_in_" . env('DB_DATABASE')];
+            }
+
+            $tables = array_filter($tables, function ($value) {
+                return $value != 'migrations' && $value != '';
+            });
+        }
 
         if ($chunkSize < 1) {
             $chunkSize = null;
@@ -55,7 +67,7 @@ class IseedCommand extends Command
 
         $tableIncrement = 0;
         foreach ($tables as $table) {
-            $table       = trim($table);
+            $table = trim($table);
             $prerunEvent = null;
             if (isset($prerunEvents[$tableIncrement])) {
                 $prerunEvent = trim($prerunEvents[$tableIncrement]);
@@ -84,7 +96,7 @@ class IseedCommand extends Command
                 continue;
             }
 
-            if ($this->confirm('File '.$className.' already exist. Do you wish to override it? [yes|no]')) {
+            if ($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
                 // if user said yes overwrite old seeder
                 $this->printResult(
                     app('iseed')->generateSeed(
@@ -109,7 +121,7 @@ class IseedCommand extends Command
     protected function getArguments()
     {
         return array(
-            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
+            array('tables', InputArgument::OPTIONAL, 'comma separated string of table names'),
         );
     }
 
@@ -161,7 +173,7 @@ class IseedCommand extends Command
 
         // Generate class name and file name
         $className = app('iseed')->generateClassName($table);
-        $seedPath  = base_path().config('iseed::config.path');
-        return [$seedPath.'/'.$className.'.php', $className.'.php'];
+        $seedPath = base_path() . config('iseed::config.path');
+        return [$seedPath . '/' . $className . '.php', $className . '.php'];
     }
 }
