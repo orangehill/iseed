@@ -51,6 +51,7 @@ class IseedCommand extends Command
 
         if (empty($tables) || $tables[0] === "") {
             $tmpTables = collect(\DB::select('SHOW TABLES'));
+
             foreach ($tmpTables as $key => $singleTable) {
                 $arrayTable = (array)$singleTable;
                 $tables[$key] = $arrayTable["Tables_in_" . env('DB_DATABASE')];
