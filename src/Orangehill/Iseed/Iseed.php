@@ -19,7 +19,7 @@ class Iseed {
 	 *
 	 * @var string
 	 */
-	private $newLineCharacter = "\r\n";
+	private $newLineCharacter = PHP_EOL;
 
 	/**
 	 * Desired indent for the code.
