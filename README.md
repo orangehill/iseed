@@ -28,7 +28,7 @@ If you wish to install it on Laravel 4 you should require 1.1 version:
 
 3) Add the service provider by opening a `app/config/app.php` file, and adding a new item to the `providers` array.
 
-    'Orangehill\Iseed\IseedServiceProvider'
+    Orangehill\Iseed\IseedServiceProvider::class
 
 ## Artisan command options
 
