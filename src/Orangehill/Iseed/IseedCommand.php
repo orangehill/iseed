@@ -3,8 +3,8 @@
 namespace Orangehill\Iseed;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class IseedCommand extends Command
 {
@@ -44,9 +44,9 @@ class IseedCommand extends Command
             app('iseed')->cleanSection();
         }
 
-        $tables        = explode(",", $this->argument('tables'));
-        $chunkSize     = intval($this->option('max'));
-        $prerunEvents  = explode(",", $this->option('prerun'));
+        $tables = explode(",", $this->argument('tables'));
+        $chunkSize = intval($this->option('max'));
+        $prerunEvents = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
 
         if ($chunkSize < 1) {
@@ -55,7 +55,7 @@ class IseedCommand extends Command
 
         $tableIncrement = 0;
         foreach ($tables as $table) {
-            $table       = trim($table);
+            $table = trim($table);
             $prerunEvent = null;
             if (isset($prerunEvents[$tableIncrement])) {
                 $prerunEvent = trim($prerunEvents[$tableIncrement]);
@@ -84,7 +84,7 @@ class IseedCommand extends Command
                 continue;
             }
 
-            if ($this->confirm('File '.$className.' already exist. Do you wish to override it? [yes|no]')) {
+            if ($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
                 // if user said yes overwrite old seeder
                 $this->printResult(
                     app('iseed')->generateSeed(
@@ -155,13 +155,13 @@ class IseedCommand extends Command
      */
     protected function generateFileName($table)
     {
-        if (!\Schema::hasTable($table)) {
+        if (!\Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
         }
 
         // Generate class name and file name
         $className = app('iseed')->generateClassName($table);
-        $seedPath  = base_path().config('iseed::config.path');
-        return [$seedPath.'/'.$className.'.php', $className.'.php'];
+        $seedPath = base_path() . config('iseed::config.path');
+        return [$seedPath . '/' . $className . '.php', $className . '.php'];
     }
 }
