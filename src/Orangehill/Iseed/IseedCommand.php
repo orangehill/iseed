@@ -6,7 +6,8 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class IseedCommand extends Command {
+class IseedCommand extends Command
+{
     /**
      * The console command name.
      *
@@ -26,7 +27,8 @@ class IseedCommand extends Command {
      *
      * @return \Orangehill\Iseed\IseedCommand
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -35,7 +37,8 @@ class IseedCommand extends Command {
      *
      * @return void
      */
-    public function fire() {
+    public function fire()
+    {
         // if clean option is checked empty iSeed template in DatabaseSeeder.php
         if ($this->option('clean')) {
             app('iseed')->cleanSection();
@@ -103,7 +106,8 @@ class IseedCommand extends Command {
      *
      * @return array
      */
-    protected function getArguments() {
+    protected function getArguments()
+    {
         return array(
             array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
         );
@@ -114,7 +118,8 @@ class IseedCommand extends Command {
      *
      * @return array
      */
-    protected function getOptions() {
+    protected function getOptions()
+    {
         return array(
             array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
             array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
@@ -132,7 +137,8 @@ class IseedCommand extends Command {
      * @param  string $table
      * @return void
      */
-    protected function printResult($successful, $table) {
+    protected function printResult($successful, $table)
+    {
         if ($successful) {
             $this->info("Created a seed file from table {$table}");
             return;
@@ -147,7 +153,8 @@ class IseedCommand extends Command {
      * @param  string $table
      * @return string
      */
-    protected function generateFileName($table) {
+    protected function generateFileName($table)
+    {
         if (!\Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
         }
