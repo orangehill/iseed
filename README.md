@@ -77,6 +77,15 @@ Example:
 artisan iseed users --max=10
 ```
 
+### exclude
+Optional parameter which accepts comma separated list of columns that you'd like to exclude from tables that are being exported. In case of multiple tables, exclusion will be applied to all of them.
+
+Example:
+```
+artisan iseed users --exclude=id
+artisan iseed users --exclude=id,created_at,updated_at
+```
+
 ### prerun
 Optional parameter which assigns a laravel event name to be fired before seeding takes place. If an event listener returns `false`, seed will fail automatically.
 You can assign multiple preruns for multiple table names by passing an array of comma separated DB names and respectively passing a comma separated array of prerun event names.
