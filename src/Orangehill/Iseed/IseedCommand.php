@@ -46,6 +46,7 @@ class IseedCommand extends Command
 
         $tables = explode(",", $this->argument('tables'));
         $chunkSize = intval($this->option('max'));
+        $exclude = explode(",", $this->option('exclude'));
         $prerunEvents = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
 
@@ -76,6 +77,7 @@ class IseedCommand extends Command
                         $table,
                         $this->option('database'),
                         $chunkSize,
+                        $exclude,
                         $prerunEvent,
                         $postrunEvent
                     ),
@@ -90,7 +92,9 @@ class IseedCommand extends Command
                     app('iseed')->generateSeed(
                         $table,
                         $this->option('database'),
-                        $chunkSize, $prerunEvent,
+                        $chunkSize,
+                        $exclude,
+                        $prerunEvent,
                         $postrunEvent
                     ),
                     $table
@@ -125,6 +129,7 @@ class IseedCommand extends Command
             array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
             array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
             array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
+            array('exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
             array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),
             array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
         );

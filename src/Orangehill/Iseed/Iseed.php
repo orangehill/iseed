@@ -46,7 +46,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $database = null, $max = 0, $prerunEvent = null, $postrunEvent = null)
+    public function generateSeed($table, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null)
     {
         if (!$database) {
             $database = config('database.default');
@@ -60,7 +60,7 @@ class Iseed
         }
 
         // Get the data
-        $data = $this->getData($table, $max);
+        $data = $this->getData($table, $max, $exclude);
 
         // Repack the data
         $dataArray = $this->repackSeedData($data);
@@ -109,13 +109,20 @@ class Iseed
      * @param  string $table
      * @return Array
      */
-    public function getData($table, $max)
+    public function getData($table, $max, $exclude = null)
     {
-        if (!$max) {
-            return \DB::connection($this->databaseName)->table($table)->get();
+        $result = \DB::connection($this->databaseName)->table($table);
+
+        if (!empty($exclude)) {
+            $allColumns = \DB::connection($this->databaseName)->getSchemaBuilder()->getColumnListing($table);
+            $result = $result->select(array_diff($allColumns, $exclude));
         }
 
-        return \DB::connection($this->databaseName)->table($table)->limit($max)->get();
+        if ($max) {
+            $result = $result->limit($max);
+        }
+
+        return $result->get();
     }
 
     /**
