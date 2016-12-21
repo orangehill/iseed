@@ -24,5 +24,10 @@
             "src/Orangehill/Iseed/Exceptions.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Orangehill\\Iseed\\Tests\\": "tests"
+        }
+    },
     "minimum-stability": "dev"
 }

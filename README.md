@@ -53,6 +53,14 @@ The following command will overwrite `UsersTableSeeder.php` if it already exists
 php artisan iseed users --force
 ```
 
+### dumpauto
+Optional boolean parameter that controls the execution of `composer dump-autoload` command. Defaults to true.
+
+Example that will stop `composer dump-autoload` from execution:
+```
+php artisan iseed users --dumpauto=false
+```
+
 ### clean
 Optional parameter which will clean `app/database/seeds/DatabaseSeeder.php` before creating new seed class.
 

@@ -3,6 +3,7 @@
 namespace Orangehill\Iseed;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Composer;
 use Illuminate\Support\Facades\Config;
 
 class Iseed
@@ -31,9 +32,16 @@ class Iseed
      */
     private $indentCharacter = "    ";
 
-    public function __construct(Filesystem $filesystem = null)
+    /**
+     * @var Composer
+     */
+    private $composer;
+
+    public function __construct(Filesystem $filesystem = null, Composer $composer = null)
     {
         $this->files = $filesystem ?: new Filesystem;
+        $this->composer = $composer ?: new Composer($this->files);
+        // $this->composer = app()['composer'];
     }
 
     public function readStubFile($file)
@@ -52,7 +60,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null)
+    public function generateSeed($table, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true)
     {
         if (!$database) {
             $database = config('database.default');
@@ -75,7 +83,6 @@ class Iseed
         $className = $this->generateClassName($table);
 
         // Get template for a seed file contents
-        // $stub = $this->files->get($this->getStubPath() . '/seed.stub');
         $stub = $this->readStubFile($this->getStubPath() . '/seed.stub');
 
         // Get a seed folder path
@@ -97,6 +104,11 @@ class Iseed
 
         // Save a populated stub
         $this->files->put($seedsPath, $seedContent);
+
+        // Run composer dump-auto
+        if ($dumpAuto) {
+            $this->composer->dumpAutoloads();
+        }
 
         // Update the DatabaseSeeder.php file
         return $this->updateDatabaseSeederRunMethod($className) !== false;

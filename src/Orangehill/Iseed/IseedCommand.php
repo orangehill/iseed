@@ -49,6 +49,7 @@ class IseedCommand extends Command
         $exclude = explode(",", $this->option('exclude'));
         $prerunEvents = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
+        $dumpAuto = intval($this->option('dumpauto'));
 
         if ($chunkSize < 1) {
             $chunkSize = null;
@@ -79,7 +80,8 @@ class IseedCommand extends Command
                         $chunkSize,
                         $exclude,
                         $prerunEvent,
-                        $postrunEvent
+                        $postrunEvent,
+                        $dumpAuto
                     ),
                     $table
                 );
@@ -95,7 +97,8 @@ class IseedCommand extends Command
                         $chunkSize,
                         $exclude,
                         $prerunEvent,
-                        $postrunEvent
+                        $postrunEvent,
+                        $dumpAuto
                     ),
                     $table
                 );
@@ -132,6 +135,7 @@ class IseedCommand extends Command
             array('exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
             array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),
             array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
+            array('dumpauto', null, InputOption::VALUE_OPTIONAL, 'run composer dump-autoload', true),
         );
     }
 
