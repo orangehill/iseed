@@ -20,7 +20,7 @@ class Iseed
      *
      * @var string
      */
-    private $newLineCharacter = "\r\n";
+    private $newLineCharacter = PHP_EOL;
 
     /**
      * Desired indent for the code.
@@ -34,6 +34,12 @@ class Iseed
     public function __construct(Filesystem $filesystem = null)
     {
         $this->files = $filesystem ?: new Filesystem;
+    }
+
+    public function readStubFile($file)
+    {
+        $buffer = file($file, FILE_IGNORE_NEW_LINES);
+        return implode(PHP_EOL, $buffer);
     }
 
     /**
@@ -69,7 +75,8 @@ class Iseed
         $className = $this->generateClassName($table);
 
         // Get template for a seed file contents
-        $stub = $this->files->get($this->getStubPath() . '/seed.stub');
+        // $stub = $this->files->get($this->getStubPath() . '/seed.stub');
+        $stub = $this->readStubFile($this->getStubPath() . '/seed.stub');
 
         // Get a seed folder path
         $seedPath = $this->getSeedPath();
