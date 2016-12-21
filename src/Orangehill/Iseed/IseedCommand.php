@@ -49,6 +49,19 @@ class IseedCommand extends Command
         $prerunEvents = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
 
+        if (empty($tables) || $tables[0] === "") {
+            $tmpTables = collect(\DB::select('SHOW TABLES'));
+
+            foreach ($tmpTables as $key => $singleTable) {
+                $arrayTable = (array)$singleTable;
+                $tables[$key] = $arrayTable["Tables_in_" . env('DB_DATABASE')];
+            }
+
+            $tables = array_filter($tables, function ($value) {
+                return $value != 'migrations' && $value != '';
+            });
+        }
+
         if ($chunkSize < 1) {
             $chunkSize = null;
         }
@@ -109,7 +122,7 @@ class IseedCommand extends Command
     protected function getArguments()
     {
         return array(
-            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
+            array('tables', InputArgument::OPTIONAL, 'comma separated string of table names'),
         );
     }
 
