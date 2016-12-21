@@ -10,8 +10,8 @@ class IseedTest extends PHPUnit_Framework_TestCase
 
     public function __construct()
     {
-        static::$stubsDir     = __DIR__.'/../src/Orangehill/Iseed/Stubs';
-        static::$testStubsDir = __DIR__.'/Stubs';
+        static::$stubsDir = __DIR__ . '/../src/Orangehill/Iseed/Stubs';
+        static::$testStubsDir = __DIR__ . '/Stubs';
     }
 
     public function tearDown()
@@ -19,17 +19,23 @@ class IseedTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
+    public function readStubFile($file)
+    {
+        $buffer = file($file, FILE_IGNORE_NEW_LINES);
+        return implode(PHP_EOL, $buffer);
+    }
+
     public function testPopulatesStub()
     {
-        $productionStub = file_get_contents(static::$stubsDir.'/seed.stub');
+        $productionStub = $this->readStubFile(static::$stubsDir . '/seed.stub');
 
         $testStubs = array(
             'blank' => array(
-                'content' => file_get_contents(static::$testStubsDir.'/seed_blank.stub'),
-                'data' => array()
+                'content' => $this->readStubFile(static::$testStubsDir . '/seed_blank.stub'),
+                'data' => array(),
             ),
             'entries_5' => array(
-                'content' => file_get_contents(static::$testStubsDir.'/seed_5.stub'),
+                'content' => $this->readStubFile(static::$testStubsDir . '/seed_5.stub'),
                 'data' => array(
                     array(
                         'id' => '1',
@@ -50,11 +56,11 @@ class IseedTest extends PHPUnit_Framework_TestCase
                     array(
                         'id' => '5',
                         'time' => '2013-10-18 14:28:51',
-                    )
-                )
+                    ),
+                ),
             ),
             'entries_505' => array(
-                'content' => file_get_contents(static::$testStubsDir.'/seed_505.stub'),
+                'content' => $this->readStubFile(static::$testStubsDir . '/seed_505.stub'),
                 'data' => array(
                     array(
                         'id' => '1',
@@ -2075,8 +2081,8 @@ class IseedTest extends PHPUnit_Framework_TestCase
                     array(
                         'id' => '505',
                         'time' => '2013-10-18 14:31:24',
-                    )
-        )));
+                    ),
+                )));
 
         $iSeed = new Orangehill\Iseed\Iseed();
         foreach ($testStubs as $key => $stub) {
@@ -2098,40 +2104,40 @@ class IseedTest extends PHPUnit_Framework_TestCase
 
     public function testRepacksSeedData()
     {
-        $data   = array(
+        $data = array(
             array('id' => '1', 'name' => 'one'),
-            array('id' => '2', 'name' => 'two')
+            array('id' => '2', 'name' => 'two'),
         );
-        $iseed  = new Orangehill\Iseed\Iseed();
+        $iseed = new Orangehill\Iseed\Iseed();
         $output = $iseed->repackSeedData($data);
         $this->assertEquals(json_encode($data), json_encode($output));
     }
 
     public function testCanGenerateClassName()
     {
-        $iseed  = new Orangehill\Iseed\Iseed();
+        $iseed = new Orangehill\Iseed\Iseed();
         $output = $iseed->generateClassName('tablename');
         $this->assertEquals('TablenameTableSeeder', $output);
     }
 
     public function testCanGetStubPath()
     {
-        $iseed    = new Orangehill\Iseed\Iseed();
-        $output   = $iseed->getStubPath();
-        $expected = substr(__DIR__, 0, -5).'src'.DIRECTORY_SEPARATOR.'Orangehill'.DIRECTORY_SEPARATOR.'Iseed'.DIRECTORY_SEPARATOR.'Stubs';
+        $iseed = new Orangehill\Iseed\Iseed();
+        $output = $iseed->getStubPath();
+        $expected = substr(__DIR__, 0, -5) . 'src' . DIRECTORY_SEPARATOR . 'Orangehill' . DIRECTORY_SEPARATOR . 'Iseed' . DIRECTORY_SEPARATOR . 'Stubs';
         $this->assertEquals($expected, $output);
     }
 
     public function testCanGenerateSeed()
     {
-        $file   = m::mock('Illuminate\Filesystem\Filesystem')->makePartial();
-        $file->shouldReceive('get')
+        $file = m::mock('Illuminate\Filesystem\Filesystem')->makePartial();
+        $mocked = m::mock('Orangehill\Iseed\Iseed', array($file))->makePartial();
+        $mocked->shouldReceive('readStubFile')
             ->once()
-            ->with(substr(__DIR__, 0, -5).'src'.DIRECTORY_SEPARATOR.'Orangehill'.DIRECTORY_SEPARATOR.'Iseed'.DIRECTORY_SEPARATOR.'Stubs'.DIRECTORY_SEPARATOR.'seed.stub');
+            ->with(substr(__DIR__, 0, -5) . 'src' . DIRECTORY_SEPARATOR . 'Orangehill' . DIRECTORY_SEPARATOR . 'Iseed' . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'seed.stub');
         $file->shouldReceive('put')
             ->once()
             ->with('seedPath', 'populatedStub');
-        $mocked = m::mock('Orangehill\Iseed\Iseed', array($file))->makePartial();
         $mocked->shouldReceive('hasTable')->once()->andReturn(true);
         $mocked->shouldReceive('getData')->once()->andReturn(array());
         $mocked->shouldReceive('generateClassName')->once()->andReturn('ClassName');
