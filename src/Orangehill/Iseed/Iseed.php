@@ -41,7 +41,6 @@ class Iseed
     {
         $this->files = $filesystem ?: new Filesystem;
         $this->composer = $composer ?: new Composer($this->files);
-        // $this->composer = app()['composer'];
     }
 
     public function readStubFile($file)
