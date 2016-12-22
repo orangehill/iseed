@@ -27,6 +27,8 @@ class IseedTest extends PHPUnit_Framework_TestCase
 
     public function testPopulatesStub()
     {
+        $composer = m::mock('Composer')->makePartial();
+
         $productionStub = $this->readStubFile(static::$stubsDir . '/seed.stub');
 
         $testStubs = array(
@@ -2089,6 +2091,7 @@ class IseedTest extends PHPUnit_Framework_TestCase
             $output = $iSeed->populateStub('test_class', $productionStub, 'test_table', $stub['data'], 500);
             $this->assertEquals($stub['content'], $output, "Stub {$key} is not what it's expected to be.");
         }
+
     }
 
     /**
@@ -2131,7 +2134,8 @@ class IseedTest extends PHPUnit_Framework_TestCase
     public function testCanGenerateSeed()
     {
         $file = m::mock('Illuminate\Filesystem\Filesystem')->makePartial();
-        $mocked = m::mock('Orangehill\Iseed\Iseed', array($file))->makePartial();
+        $composer = m::mock('Illuminate\Support\Composer', array($file))->makePartial();
+        $mocked = m::mock('Orangehill\Iseed\Iseed', array($file, $composer))->makePartial();
         $mocked->shouldReceive('readStubFile')
             ->once()
             ->with(substr(__DIR__, 0, -5) . 'src' . DIRECTORY_SEPARATOR . 'Orangehill' . DIRECTORY_SEPARATOR . 'Iseed' . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'seed.stub');
@@ -2145,6 +2149,7 @@ class IseedTest extends PHPUnit_Framework_TestCase
         $mocked->shouldReceive('getPath')->once()->with('ClassName', 'seedPath')->andReturn('seedPath');
         $mocked->shouldReceive('populateStub')->once()->andReturn('populatedStub');
         $mocked->shouldReceive('updateDatabaseSeederRunMethod')->once()->with('ClassName')->andReturn(true);
+        $composer->shouldReceive('dumpAutoloads')->once();
         $mocked->generateSeed('tablename', 'database', 'numOfRows');
     }
 }
