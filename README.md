@@ -16,7 +16,7 @@ For Laravel 5 installation edit your project's `composer.json` file to require `
 	}
 	
 #### Laravel 5 versions less than 5.3.8
-For Laravel versions that are less than 5.3.8 edit your project's `composer.json` file to require `2.2` version:
+For Laravel 5 versions that are less than 5.3.8 edit your project's `composer.json` file to require `2.2` version:
 
     "require": {
 		"orangehill/iseed": "2.2"
