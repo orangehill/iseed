@@ -1,12 +1,16 @@
 {
     "name": "adiesel82/iseed",
-    "description": "Generate a new Laravel database seed file based on data from the existing database table.",
+    "description": "Generate a new Laravel 5.4 database seed file based on data from the existing database table.",
     "keywords": ["laravel", "generators", "seed", "artisan"],
     "license": "BSD-2-Clause",
     "authors": [
         {
             "name": "Tihomir Opacic",
             "email": "tihomir.opacic@orangehilldev.com"
+        },
+        {
+            "name": "Alexey Starostenko",
+            "email": "starostenko@gmail.com"
         }
     ],
     "require": {
