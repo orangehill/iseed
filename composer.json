@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "~5.4.*"
+        "illuminate/support": "5.4.*"
     },
     "require-dev": {
         "mockery/mockery": "dev-master",
