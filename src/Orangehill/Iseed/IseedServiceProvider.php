@@ -32,7 +32,7 @@ class IseedServiceProvider extends ServiceProvider
     {
         $this->registerResources();
 
-        this->app->singleton('iseed', function($app) {
+        $this->app->singleton('iseed', function($app) {
             return new Iseed;
         });
 
