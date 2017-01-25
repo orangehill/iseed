@@ -32,17 +32,19 @@ class IseedServiceProvider extends ServiceProvider
     {
         $this->registerResources();
 
-        $this->app['iseed'] = $this->app->share(function($app) {
+        this->app->singleton('iseed', function($app) {
             return new Iseed;
         });
+
         $this->app->booting(function() {
             $loader = \Illuminate\Foundation\AliasLoader::getInstance();
             $loader->alias('Iseed', 'Orangehill\Iseed\Facades\Iseed');
         });
 
-        $this->app['command.iseed'] = $this->app->share(function($app) {
+        $this->app->singleton('command.iseed', function($app) {
             return new IseedCommand;
         });
+
         $this->commands('command.iseed');
     }
 
