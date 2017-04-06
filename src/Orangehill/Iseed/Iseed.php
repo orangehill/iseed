@@ -59,7 +59,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true)
+    public function generateSeed($table, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true)
     {
         if (!$database) {
             $database = config('database.default');
@@ -98,7 +98,8 @@ class Iseed
             $dataArray,
             null,
             $prerunEvent,
-            $postrunEvent
+            $postrunEvent,
+            $indexed
         );
 
         // Save a populated stub
@@ -211,7 +212,7 @@ class Iseed
      * @param  string   $postunEvent
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
         $inserts = '';
@@ -222,7 +223,7 @@ class Iseed
             $inserts .= sprintf(
                 "\DB::table('%s')->insert(%s);",
                 $table,
-                $this->prettifyArray($chunk)
+                $this->prettifyArray($chunk, $indexed)
             );
         }
 
@@ -289,9 +290,11 @@ class Iseed
      * @param  array  $array
      * @return string
      */
-    protected function prettifyArray($array)
+    protected function prettifyArray($array, $indexed = true)
     {
-        $content = var_export($array, true);
+        $content = ($indexed)
+            ? var_export($array, true)
+            : preg_replace("/[0-9]+ \=\>/i", '', var_export($array, true));
 
         $lines = explode("\n", $content);
 
