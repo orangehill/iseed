@@ -137,6 +137,15 @@ The following example will only assign a `someGroupEvent` to `groups` table seed
 artisan iseed users,groups --postrun=,someGroupEvent
 ```
 
+### indexed
+By using --indexed=0 the seed can be generated as a non-indexed array.
+The use case for this feature is when you need to merge two seed files.
+
+Example:
+```
+artisan iseed users --indexed=0
+```
+
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments. 
