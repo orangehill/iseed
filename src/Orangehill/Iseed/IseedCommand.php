@@ -50,7 +50,7 @@ class IseedCommand extends Command
         $prerunEvents = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
         $dumpAuto = intval($this->option('dumpauto'));
-        $indexed = boolval($this->option('indexed'));
+        $indexed = !$this->option('noindex');
 
         if ($chunkSize < 1) {
             $chunkSize = null;
@@ -139,7 +139,7 @@ class IseedCommand extends Command
             array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),
             array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
             array('dumpauto', null, InputOption::VALUE_OPTIONAL, 'run composer dump-autoload', true),
-            array('indexed', null, InputOption::VALUE_OPTIONAL, 'index items in the seed', true),
+            array('noindex', null, InputOption::VALUE_NONE, 'no indexing in the seed', null),
         );
     }
 
