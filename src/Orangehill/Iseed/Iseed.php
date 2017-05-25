@@ -221,7 +221,7 @@ class Iseed
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
             $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
+                "\DB::connection('".$this->databaseName."')->table('%s')->insert(%s);",
                 $table,
                 $this->prettifyArray($chunk, $indexed)
             );
@@ -251,6 +251,8 @@ class Iseed
             $stub = str_replace('{{table}}', $table, $stub);
         }
 
+        $stub = str_replace('{{database_name}}', $this->databaseName, $stub);
+        
         $postrunEventInsert = '';
         if ($postrunEvent) {
             $postrunEventInsert .= "\$response = Event::until(new $postrunEvent());";
