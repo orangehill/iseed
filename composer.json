@@ -32,5 +32,12 @@
             "Orangehill\\Iseed\\Tests\\": "tests"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Orangehill\\Iseed\\IseedServiceProvider"
+            ]
+        }
+    }
 }
