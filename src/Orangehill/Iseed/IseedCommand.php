@@ -37,6 +37,16 @@ class IseedCommand extends Command
      *
      * @return void
      */
+    public function handle()
+    {
+        return $this->fire();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
     public function fire()
     {
         // if clean option is checked empty iSeed template in DatabaseSeeder.php
