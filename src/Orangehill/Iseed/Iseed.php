@@ -216,7 +216,7 @@ class Iseed
      * @param  string   $postunEvent
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
         $inserts = '';
@@ -225,9 +225,10 @@ class Iseed
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
             $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
+                "\DB::connection('%s')->table('%s')->insert(%s);",
+                $this->databaseName,
                 $table,
-                $this->prettifyArray($chunk, $indexed)
+                $this->prettifyArray($chunk)
             );
         }
 
@@ -248,8 +249,12 @@ class Iseed
         }
 
         $stub = str_replace(
-            '{{prerun_event}}', $prerunEventInsert, $stub
+            '{{prerun_event}}',
+            $prerunEventInsert,
+            $stub
         );
+
+        $stub = str_replace('{{database_name}}', $this->databaseName, $stub);
 
         if (!is_null($table)) {
             $stub = str_replace('{{table}}', $table, $stub);
@@ -270,7 +275,9 @@ class Iseed
         }
 
         $stub = str_replace(
-            '{{postrun_event}}', $postrunEventInsert, $stub
+            '{{postrun_event}}',
+            $postrunEventInsert,
+            $stub
         );
 
         $stub = str_replace('{{insert_statements}}', $inserts, $stub);
