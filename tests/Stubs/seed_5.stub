@@ -14,9 +14,9 @@ class test_class extends Seeder
     {
         
 
-        \DB::table('test_table')->delete();
+        \DB::connection('default')->table('test_table')->delete();
         
-        \DB::table('test_table')->insert(array (
+        \DB::connection('default')->table('test_table')->insert(array (
             0 => 
             array (
                 'id' => '1',
