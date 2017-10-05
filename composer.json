@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=7.0",
         "illuminate/support": "^5.3.8"
     },
     "require-dev": {
@@ -32,5 +32,13 @@
             "Orangehill\\Iseed\\Tests\\": "tests"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Orangehill\\Iseed\\IseedServiceProvider"
+            ]
+        }
+    }
 }

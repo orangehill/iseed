@@ -37,7 +37,7 @@ class IseedCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         // if clean option is checked empty iSeed template in DatabaseSeeder.php
         if ($this->option('clean')) {
