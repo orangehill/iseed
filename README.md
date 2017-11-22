@@ -52,6 +52,18 @@ php artisan iseed my_table
 php artisan iseed my_table,another_table
 ```
 
+### [table_name:class_name]
+Optionally also specify the parameter which defines the class name and file name that will be used for seed creation.
+This is useful if you want to create an additional seeder for a table that already has a seed existing at MyTableSeeder, et al.
+
+Examples:
+```
+php artisan iseed my_table:NewMyTableSeeder
+```
+```
+php artisan iseed my_table:NewMyTableSeeder,another_table:NewAnotherTableSeeder
+```
+
 ### force
 Optional parameter which is used to automatically overwrite any existing seeds for desired tables
 

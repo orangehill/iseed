@@ -71,6 +71,13 @@ class IseedCommand extends Command
         $tableIncrement = 0;
         foreach ($tables as $table) {
             $table = trim($table);
+            $class = null;
+            $regexp = "/^([^:]*):([^:]*)$/";
+            if (preg_match($regexp, $table)) {
+                $class = preg_replace($regexp, '$2', $table);
+                $table = preg_replace($regexp, '$1', $table);
+            }
+
             $prerunEvent = null;
             if (isset($prerunEvents[$tableIncrement])) {
                 $prerunEvent = trim($prerunEvents[$tableIncrement]);
@@ -82,13 +89,14 @@ class IseedCommand extends Command
             $tableIncrement++;
 
             // generate file and class name based on name of the table
-            list($fileName, $className) = $this->generateFileName($table);
+            list($fileName, $className) = $this->generateFileName($table, $class);
 
             // if file does not exist or force option is turned on generate seeder
             if (!\File::exists($fileName) || $this->option('force')) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
+                        $class,
                         $this->option('database'),
                         $chunkSize,
                         $exclude,
@@ -109,6 +117,7 @@ class IseedCommand extends Command
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
+                        $class,
                         $this->option('database'),
                         $chunkSize,
                         $exclude,
@@ -182,14 +191,16 @@ class IseedCommand extends Command
      * @param  string $table
      * @return string
      */
-    protected function generateFileName($table)
+    protected function generateFileName($table, $className=null)
     {
         if (!\Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
         }
 
         // Generate class name and file name
-        $className = app('iseed')->generateClassName($table);
+        $fileName = app('iseed')->generateClassName($table);
+        if (!$className)
+            $className = $fileName;
         $seedPath = base_path() . config('iseed::config.path');
         return [$seedPath . '/' . $className . '.php', $className . '.php'];
     }

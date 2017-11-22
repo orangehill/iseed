@@ -59,7 +59,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $class, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
     {
         if (!$database) {
             $database = config('database.default');
@@ -79,7 +79,7 @@ class Iseed
         $dataArray = $this->repackSeedData($data);
 
         // Generate class name
-        $className = $this->generateClassName($table);
+        $className = $this->generateClassName($table, $class);
 
         // Get template for a seed file contents
         $stub = $this->readStubFile($this->getStubPath() . '/seed.stub');
@@ -186,8 +186,11 @@ class Iseed
      * @param  string  $table
      * @return string
      */
-    public function generateClassName($table)
+    public function generateClassName($table, $class=null)
     {
+        if ($class)
+            return $class;
+
         $tableString = '';
         $tableName = explode('_', $table);
         foreach ($tableName as $tableNameExploded) {
