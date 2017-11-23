@@ -115,7 +115,9 @@ class IseedCommand extends Command
                         $prerunEvent,
                         $postrunEvent,
                         $dumpAuto,
-                        $indexed
+                        $indexed,
+                        $orderBy,
+                        $direction
                     ),
                     $table
                 );
