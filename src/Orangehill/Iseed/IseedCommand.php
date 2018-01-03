@@ -62,6 +62,7 @@ class IseedCommand extends Command
         $dumpAuto = intval($this->option('dumpauto'));
         $indexed = !$this->option('noindex');
         $orderBy = $this->option('orderby');
+        $namespace = $this->option('namespace');
         $direction = $this->option('direction');
 
         if ($chunkSize < 1) {
@@ -97,7 +98,9 @@ class IseedCommand extends Command
                         $dumpAuto,
                         $indexed,
                         $orderBy,
-                        $direction
+                        $direction,
+                        $namespace
+
                     ),
                     $table
                 );
@@ -115,7 +118,10 @@ class IseedCommand extends Command
                         $prerunEvent,
                         $postrunEvent,
                         $dumpAuto,
-                        $indexed
+                        $indexed,
+                        null,
+                        null,
+                        $namespace
                     ),
                     $table
                 );
@@ -156,6 +162,7 @@ class IseedCommand extends Command
             array('noindex', null, InputOption::VALUE_NONE, 'no indexing in the seed', null),
             array('orderby', null, InputOption::VALUE_OPTIONAL, 'orderby desc by column', null),
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
+            array('namespace', null, InputOption::VALUE_OPTIONAL, 'namespace of the files', null),
         );
     }
 
