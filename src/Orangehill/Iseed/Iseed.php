@@ -223,6 +223,7 @@ class Iseed
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
         $inserts = '';
+        $file_copies = '';
         $chunks = array_chunk($data, $chunkSize);
         foreach ($chunks as $chunk) {
             $this->addNewLines($inserts);
@@ -232,6 +233,17 @@ class Iseed
                 $table,
                 $this->prettifyArray($chunk, $indexed)
             );
+
+            // Find file references
+            foreach ($chunk as $row) {
+                foreach ($row as $col_name=>$col_val) {
+                    // Detect JSON vs string
+                    if ($obj = json_decode($col_val))
+                        $file_copies .= $this->generateFileCopiesFromColumnData($obj);
+                    else
+                        $file_copies .= $this->generateFileCopiesFromColumnData($col_val);
+                }
+            }
         }
 
         $stub = str_replace('{{class}}', $class, $stub);
@@ -277,6 +289,7 @@ class Iseed
         );
 
         $stub = str_replace('{{insert_statements}}', $inserts, $stub);
+        $stub = str_replace('{{file_copy_statements}}', $file_copies, $stub);
 
         return $stub;
     }
@@ -411,5 +424,54 @@ class Iseed
         }
 
         return $this->files->put($databaseSeederPath, $content) !== false;
+    }
+
+
+    /**
+     * Parses passed data as both string and JSON, looking for filename references. Reference found are copied to seeds/ dir and instructions are appended to $file_copies
+     * @param  string|array|object  $col_val
+     * @return string
+     */
+    private function generateFileCopiesFromColumnData($col_val) {
+        $file_copies = '';
+
+        // Detect array/object, traverse
+        if (is_object($col_val) || is_array($col_val)) {
+            $col_val = (array)$col_val;
+
+            foreach ($col_val as $k=>$v) {
+                return $this->generateFileCopiesFromColumnData($v);
+            }
+        }
+
+        // Fail on non-string
+        if (!is_string($col_val))
+            return '';
+
+        // Detect filenames
+        if (preg_match("/\//", $col_val)) {
+            $path = storage_path('app/public/' .$col_val);
+            if (\Storage::exists('public/' .$col_val)) {
+                // Make target dir if it does not exist
+                $target_dir = dirname(database_path('seeds/' .$col_val));
+                if (!file_exists($target_dir))
+                    mkdir($target_dir, 0777, true);
+
+                // Copy file to seed directory
+                \File::copy($path, database_path('seeds/' .$col_val));
+
+                // Generate file_copies instruction to copy file from seed to storage
+                $file_copies .= '$seed_file_path = database_path("seeds/' .$col_val. '");' .PHP_EOL.$this->indentCharacter.$this->indentCharacter.
+                                '$storage_file_path = "app/public/' .$col_val. '";' .PHP_EOL.$this->indentCharacter.$this->indentCharacter.
+                                '$target_dir = dirname(storage_path($storage_file_path));' .PHP_EOL.$this->indentCharacter.$this->indentCharacter.
+                                'if (!file_exists($target_dir))' .PHP_EOL.$this->indentCharacter.$this->indentCharacter.$this->indentCharacter.
+                                'mkdir($target_dir, 0777, true);' .PHP_EOL.$this->indentCharacter.$this->indentCharacter.$this->indentCharacter.
+                                'if (\File::exists($storage_file_path))' .PHP_EOL.$this->indentCharacter.$this->indentCharacter.
+                                '    \File::delete($storage_file_path);' .PHP_EOL.$this->indentCharacter.$this->indentCharacter.
+                                '\File::copy($seed_file_path, storage_path($storage_file_path));' .PHP_EOL.PHP_EOL;
+            }
+        }
+
+        return $file_copies;
     }
 }

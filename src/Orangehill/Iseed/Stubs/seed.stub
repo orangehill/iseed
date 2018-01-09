@@ -17,6 +17,8 @@ class {{class}} extends Seeder
         \DB::table('{{table}}')->delete();
         {{insert_statements}}
         
+        {{file_copy_statements}}
+        
         {{postrun_event}}
     }
 }
