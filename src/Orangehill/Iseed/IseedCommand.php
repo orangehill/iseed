@@ -54,7 +54,16 @@ class IseedCommand extends Command
             app('iseed')->cleanSection();
         }
 
-        $tables = explode(",", $this->argument('tables'));
+        $tables = array_filter(explode(",", $this->argument('tables')));
+
+        if (empty($tables)) {
+            $tables = \Schema::getConnection()->getDoctrineSchemaManager()->listTableNames();
+
+            if (($key = array_search('migrations', $tables)) !== false) {
+                unset($tables[$key]);
+            }
+        }
+
         $chunkSize = intval($this->option('max'));
         $exclude = explode(",", $this->option('exclude'));
         $prerunEvents = explode(",", $this->option('prerun'));
@@ -133,7 +142,7 @@ class IseedCommand extends Command
     protected function getArguments()
     {
         return array(
-            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
+            array('tables', InputArgument::OPTIONAL, 'comma separated string of table names'),
         );
     }
 
