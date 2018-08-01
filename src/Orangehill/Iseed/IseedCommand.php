@@ -85,7 +85,7 @@ class IseedCommand extends Command
             list($fileName, $className) = $this->generateFileName($table);
 
             // if file does not exist or force option is turned on generate seeder
-            if (!\File::exists($fileName) || $this->option('force')) {
+            if ($this->option('force') || !\File::exists($fileName)) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
@@ -133,7 +133,7 @@ class IseedCommand extends Command
     protected function getArguments()
     {
         return array(
-            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
+            array('tables', InputArgument::OPTIONAL, 'comma separated string of table names'),
         );
     }
 
@@ -148,6 +148,7 @@ class IseedCommand extends Command
             array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
             array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
             array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
+            array('ignore', null, InputOption::VALUE_OPTIONAL, 'comma separated string of tables to ignore', ""),
             array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
             array('exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
             array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),

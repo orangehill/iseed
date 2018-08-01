@@ -51,11 +51,11 @@ class Iseed
 
     /**
      * Generates a seed file.
-     * @param  string   $table
-     * @param  string   $database
-     * @param  int      $max
-     * @param  string   $prerunEvent
-     * @param  string   $postunEvent
+     * @param  string $table
+     * @param  string $database
+     * @param  int $max
+     * @param  string $prerunEvent
+     * @param  string $postunEvent
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
@@ -137,7 +137,7 @@ class Iseed
             $result = $result->select(array_diff($allColumns, $exclude));
         }
 
-        if($orderBy) {
+        if ($orderBy) {
             $result = $result->orderBy($orderBy, $direction);
         }
 
@@ -183,7 +183,7 @@ class Iseed
 
     /**
      * Generates a seed class name (also used as a filename)
-     * @param  string  $table
+     * @param  string $table
      * @return string
      */
     public function generateClassName($table)
@@ -207,16 +207,16 @@ class Iseed
 
     /**
      * Populate the place-holders in the seed stub.
-     * @param  string   $class
-     * @param  string   $stub
-     * @param  string   $table
-     * @param  string   $data
-     * @param  int      $chunkSize
-     * @param  string   $prerunEvent
-     * @param  string   $postunEvent
+     * @param  string $class
+     * @param  string $stub
+     * @param  string $table
+     * @param  string $data
+     * @param  int $chunkSize
+     * @param  string $prerunEvent
+     * @param  string $postunEvent
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
         $inserts = '';
@@ -225,9 +225,10 @@ class Iseed
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
             $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
+                "\DB::connection('%s')->table('%s')->insert(%s);",
+                $this->databaseName,
                 $table,
-                $this->prettifyArray($chunk, $indexed)
+                $this->prettifyArray($chunk)
             );
         }
 
@@ -248,8 +249,12 @@ class Iseed
         }
 
         $stub = str_replace(
-            '{{prerun_event}}', $prerunEventInsert, $stub
+            '{{prerun_event}}',
+            $prerunEventInsert,
+            $stub
         );
+
+        $stub = str_replace('{{database_name}}', $this->databaseName, $stub);
 
         if (!is_null($table)) {
             $stub = str_replace('{{table}}', $table, $stub);
@@ -270,7 +275,9 @@ class Iseed
         }
 
         $stub = str_replace(
-            '{{postrun_event}}', $postrunEventInsert, $stub
+            '{{postrun_event}}',
+            $postrunEventInsert,
+            $stub
         );
 
         $stub = str_replace('{{insert_statements}}', $inserts, $stub);
@@ -280,8 +287,8 @@ class Iseed
 
     /**
      * Create the full path name to the seed file.
-     * @param  string  $name
-     * @param  string  $path
+     * @param  string $name
+     * @param  string $path
      * @return string
      */
     public function getPath($name, $path)
@@ -291,7 +298,7 @@ class Iseed
 
     /**
      * Prettify a var_export of an array
-     * @param  array  $array
+     * @param  array $array
      * @return string
      */
     protected function prettifyArray($array, $indexed = true)
@@ -323,8 +330,7 @@ class Iseed
                 //skip character right after an escape \
                 if ($lines[$i][$j] == '\\') {
                     $j++;
-                }
-                //check string open/end
+                } //check string open/end
                 else if ($lines[$i][$j] == '\'') {
                     $inString = !$inString;
                 }
@@ -344,8 +350,8 @@ class Iseed
     /**
      * Adds new lines to the passed content variable reference.
      *
-     * @param string    $content
-     * @param int       $numberOfLines
+     * @param string $content
+     * @param int $numberOfLines
      */
     private function addNewLines(&$content, $numberOfLines = 1)
     {
@@ -358,8 +364,8 @@ class Iseed
     /**
      * Adds indentation to the passed content reference.
      *
-     * @param string    $content
-     * @param int       $numberOfIndents
+     * @param string $content
+     * @param int $numberOfIndents
      */
     private function addIndent(&$content, $numberOfIndents = 1)
     {
@@ -387,7 +393,7 @@ class Iseed
 
     /**
      * Updates the DatabaseSeeder file's run method (kudoz to: https://github.com/JeffreyWay/Laravel-4-Generators)
-     * @param  string  $className
+     * @param  string $className
      * @return bool
      */
     public function updateDatabaseSeederRunMethod($className)

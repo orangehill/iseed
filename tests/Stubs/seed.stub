@@ -14,7 +14,7 @@ class test_class extends Seeder
     {
         {{prerun_event}}
 
-        \DB::table('test_table')->delete();
+        \DB::connection('')->table('test_table')->delete();
         {{insert_statements}}
 
         {{postrun_event}}
