@@ -147,6 +147,13 @@ Example:
 artisan iseed users --noindex
 ```
 
+### namespace
+By using --namespace the seed can be generated with a namespace.
+
+Example:
+```
+artisan iseed users --namespace=Seeds\Demo
+```
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments. 

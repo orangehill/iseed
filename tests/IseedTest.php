@@ -34,10 +34,38 @@ class IseedTest extends PHPUnit_Framework_TestCase
         $testStubs = array(
             'blank' => array(
                 'content' => $this->readStubFile(static::$testStubsDir . '/seed_blank.stub'),
+                'namespace' => null,
                 'data' => array(),
             ),
             'entries_5' => array(
                 'content' => $this->readStubFile(static::$testStubsDir . '/seed_5.stub'),
+                'namespace' => null,
+                'data' => array(
+                    array(
+                        'id' => '1',
+                        'time' => '2013-10-18 14:28:51',
+                    ),
+                    array(
+                        'id' => '2',
+                        'time' => '2013-10-18 14:28:51',
+                    ),
+                    array(
+                        'id' => '3',
+                        'time' => '2013-10-18 14:28:51',
+                    ),
+                    array(
+                        'id' => '4',
+                        'time' => '2013-10-18 14:28:51',
+                    ),
+                    array(
+                        'id' => '5',
+                        'time' => '2013-10-18 14:28:51',
+                    ),
+                ),
+            ),
+            'entries_5_namespace' => array(
+                'content' => $this->readStubFile(static::$testStubsDir . '/seed_5_namespace.stub'),
+                'namespace' => 'App\Seeds',
                 'data' => array(
                     array(
                         'id' => '1',
@@ -63,6 +91,7 @@ class IseedTest extends PHPUnit_Framework_TestCase
             ),
             'entries_505' => array(
                 'content' => $this->readStubFile(static::$testStubsDir . '/seed_505.stub'),
+                'namespace' => null,
                 'data' => array(
                     array(
                         'id' => '1',
@@ -2088,7 +2117,7 @@ class IseedTest extends PHPUnit_Framework_TestCase
 
         $iSeed = new Orangehill\Iseed\Iseed();
         foreach ($testStubs as $key => $stub) {
-            $output = $iSeed->populateStub('test_class', $productionStub, 'test_table', $stub['data'], 500);
+            $output = $iSeed->populateStub('test_class', $productionStub, 'test_table', $stub['data'], 500, null, null, true, $stub['namespace']);
             $this->assertEquals($stub['content'], $output, "Stub {$key} is not what it's expected to be.");
         }
 

@@ -59,7 +59,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $namespace = null)
     {
         if (!$database) {
             $database = config('database.default');
@@ -99,7 +99,8 @@ class Iseed
             null,
             $prerunEvent,
             $postrunEvent,
-            $indexed
+            $indexed,
+            $namespace
         );
 
         // Save a populated stub
@@ -216,7 +217,7 @@ class Iseed
      * @param  string   $postunEvent
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $namespace = null)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
         $inserts = '';
@@ -231,7 +232,10 @@ class Iseed
             );
         }
 
+        $namespace = $namespace ? "\nnamespace $namespace;\n" : '';
+
         $stub = str_replace('{{class}}', $class, $stub);
+        $stub = str_replace('{{namespace}}', $namespace, $stub);
 
         $prerunEventInsert = '';
         if ($prerunEvent) {
