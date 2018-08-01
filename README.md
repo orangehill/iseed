@@ -41,7 +41,7 @@ If you wish to install it on Laravel 4 you should require `1.1` version:
 ## Artisan command options
 
 ### [table_name]
-Mandatory parameter which defines which table/s will be used for seed creation.
+Optional parameter which defines which table/s will be used for seed creation.
 Use CSV notation for multiple tables. Seed file will be generated for each table.
 
 Examples:
@@ -50,6 +50,11 @@ php artisan iseed my_table
 ```
 ```
 php artisan iseed my_table,another_table
+```
+
+If excluded, seed files will be generated for all tables in the database, except the migrations table.
+```
+php artisan iseed
 ```
 
 ### force
