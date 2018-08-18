@@ -392,7 +392,8 @@ class Iseed
      */
     public function updateDatabaseSeederRunMethod($className)
     {
-        $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+        $path = (config('iseed::config.seeder_path') ? config('iseed::config.seeder_path') : config('iseed::config.path'));
+        $databaseSeederPath = base_path() . $path . '/DatabaseSeeder.php';
 
         $content = $this->files->get($databaseSeederPath);
         if (strpos($content, "\$this->call({$className}::class)") === false) {
