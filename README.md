@@ -54,7 +54,7 @@ php artisan iseed my_table,another_table
 
 ### classnameprefix & classnamesuffix
 Optionally specify a prefix or suffix for the Seeder class name and file name.
-This is useful if you want to create an additional seed for a table that has an existing seed without overwriting the existing.
+This is useful if you want to create an additional seed for a table that has an existing seed without overwriting the existing one.
 
 Examples:
 
