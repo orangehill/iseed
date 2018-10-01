@@ -14,14 +14,14 @@ For Laravel 5 installation edit your project's `composer.json` file to require `
     "require": {
 		"orangehill/iseed": "dev-master"
 	}
-	
+
 #### Laravel 5 versions less than 5.3.8
 For Laravel 5 versions that are less than 5.3.8 edit your project's `composer.json` file to require `2.2` version:
 
     "require": {
 		"orangehill/iseed": "2.2"
 	}
-	
+
 #### Laravel 4
 If you wish to install it on Laravel 4 you should require `1.1` version:
 
@@ -51,6 +51,32 @@ php artisan iseed my_table
 ```
 php artisan iseed my_table,another_table
 ```
+
+### classnameprefix & classnamesuffix
+Optionally specify a prefix or suffix for the Seeder class name and file name.
+This is useful if you want to create an additional seed for a table that has an existing seed without overwriting the existing.
+
+Examples:
+
+```
+php artisan iseed my_table --classnameprefix=Customized
+```
+outputs CustomizedMyTableSeeder.php
+
+```
+php artisan iseed my_table,another_table --classnameprefix=Customized
+```
+outputs CustomizedMyTableSeeder.php and CustomizedAnotherTableSeeder.php
+
+```
+php artisan iseed my_table --classnamesuffix=Customizations
+```
+outputs MyTableCustomizationsSeeder.php
+
+```
+php artisan iseed my_table,another_table --classnamesuffix=Customizations
+```
+outputs MyTableCustomizationsSeeder.php and AnotherTableCustomizationsSeeder.php
 
 ### force
 Optional parameter which is used to automatically overwrite any existing seeds for desired tables
@@ -149,7 +175,7 @@ artisan iseed users --noindex
 
 ## Usage
 
-To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments. 
+To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments.
 
 This will create a file inside a `/database/seeds` (`/app/database/seeds` for Laravel 4), with the contents similar to following example:
 
@@ -207,9 +233,9 @@ This will create a file inside a `/database/seeds` (`/app/database/seeds` for La
 
 	}
 
-This command will also update `/database/seeds/DatabaseSeeder.php` (`/app/database/seeds/DatabaseSeeder.php` for Laravel 4) to include a call to this newly generated seed class. 
+This command will also update `/database/seeds/DatabaseSeeder.php` (`/app/database/seeds/DatabaseSeeder.php` for Laravel 4) to include a call to this newly generated seed class.
 
-If you wish you can define custom iSeed template in which all the calls will be placed. You can do this by using `#iseed_start` and `#iseed_end` templates anywhere  within `/database/seeds/DatabaseSeeder.php` (`/app/database/seeds/DatabaseSeeder.php` for Laravel 4), for example: 
+If you wish you can define custom iSeed template in which all the calls will be placed. You can do this by using `#iseed_start` and `#iseed_end` templates anywhere  within `/database/seeds/DatabaseSeeder.php` (`/app/database/seeds/DatabaseSeeder.php` for Laravel 4), for example:
 
 	<?php
 
@@ -229,10 +255,10 @@ If you wish you can define custom iSeed template in which all the calls will be 
 		    {
 		        throw new \Exception('Only run this from production');
 		    }
-			
+
 			#iseed_start
-			
-			// here all the calls for newly generated seeds will be stored. 
+
+			// here all the calls for newly generated seeds will be stored.
 
 			#iseed_end
 		}
@@ -245,9 +271,9 @@ In case you try to generate seed file that already exists command will ask you a
 
 If you wish to clear iSeed template you can use Artisan Command Option `--clean`, e.g. `php artisan iseed users --clean`. This will clean template from `app/database/seeds/DatabaseSeeder.php` before creating new seed class.
 
-You can specify db connection that will be used for creation of new seed files by using Artisan Command Option `--database=connection_name`, e.g. `php artisan iseed users --database=mysql2`. 
+You can specify db connection that will be used for creation of new seed files by using Artisan Command Option `--database=connection_name`, e.g. `php artisan iseed users --database=mysql2`.
 
-To limit number of rows that will be exported from table use Artisan Command Option `--max=number_of_rows`, e.g. `php artisan iseed users --max=10`. If you use this option while exporting multiple tables specified limit will be applied to all of them.  
+To limit number of rows that will be exported from table use Artisan Command Option `--max=number_of_rows`, e.g. `php artisan iseed users --max=10`. If you use this option while exporting multiple tables specified limit will be applied to all of them.
 
 To (re)seed the database go to the Terminal and run Laravel's `db:seed command` (`php artisan db:seed`).
 
