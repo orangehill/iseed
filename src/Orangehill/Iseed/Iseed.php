@@ -61,7 +61,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
     {
         if (!$database) {
             $database = config('database.default');
@@ -98,7 +98,7 @@ class Iseed
             $stub,
             $table,
             $dataArray,
-            null,
+            $chunkSize,
             $prerunEvent,
             $postrunEvent,
             $indexed
@@ -223,6 +223,7 @@ class Iseed
     public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
+
         $inserts = '';
         $chunks = array_chunk($data, $chunkSize);
         foreach ($chunks as $chunk) {

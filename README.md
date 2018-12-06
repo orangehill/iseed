@@ -119,6 +119,14 @@ Example:
 artisan iseed users --max=10
 ```
 
+### chunksize
+Optional parameter which defines the size of data chunks for each insert query.
+
+Example:
+```
+artisan iseed users --chunksize=100
+```
+
 ### exclude
 Optional parameter which accepts comma separated list of columns that you'd like to exclude from tables that are being exported. In case of multiple tables, exclusion will be applied to all of them.
 
