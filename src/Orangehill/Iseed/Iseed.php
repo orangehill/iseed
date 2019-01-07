@@ -84,7 +84,7 @@ class Iseed
         $className = $this->generateClassName($table, $prefix, $suffix);
 
         // Get template for a seed file contents
-        $stub = $this->readStubFile($this->getStubPath() . '/seed.stub');
+        $stub = $this->readStubFile(config('iseed.stub_path', $this->getStubPath() . '/seed.stub'));
 
         // Get a seed folder path
         $seedPath = $this->getSeedPath();
@@ -230,7 +230,7 @@ class Iseed
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
             $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
+                config('iseed.insert_command', "\DB::table('%s')->insert(%s);"),
                 $table,
                 $this->prettifyArray($chunk, $indexed)
             );
@@ -380,7 +380,8 @@ class Iseed
      */
     public function cleanSection()
     {
-        $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+        $path = (config('iseed::config.seeder_path') ? config('iseed::config.seeder_path') : config('iseed::config.path') . '/DatabaseSeeder.php');
+        $databaseSeederPath = base_path() . $path;
 
         $content = $this->files->get($databaseSeederPath);
 
@@ -397,7 +398,12 @@ class Iseed
      */
     public function updateDatabaseSeederRunMethod($className)
     {
-        $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+        if(config('iseed.seeder_modification') === false) {
+            return true;
+        }
+
+        $path = (config('iseed::config.seeder_path') ? config('iseed::config.seeder_path') : config('iseed::config.path') . '/DatabaseSeeder.php');
+        $databaseSeederPath = base_path() . $path;
 
         $content = $this->files->get($databaseSeederPath);
         if (strpos($content, "\$this->call({$className}::class)") === false) {
