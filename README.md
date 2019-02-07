@@ -6,38 +6,27 @@
 
 ## Installation
 
-1) Add `orangehill/iseed` to your composer file.
-
-#### Laravel 5
-For Laravel 5 installation edit your project's `composer.json` file to require `orangehill/iseed`.
-
-    "require": {
-		"orangehill/iseed": "dev-master"
-	}
-
-#### Laravel 5 versions less than 5.3.8
-For Laravel 5 versions that are less than 5.3.8 edit your project's `composer.json` file to require `2.2` version:
-
-    "require": {
-		"orangehill/iseed": "2.2"
-	}
-
-#### Laravel 4
-If you wish to install it on Laravel 4 you should require `1.1` version:
-
-    "require": {
-		"orangehill/iseed": "1.1"
-	}
-
-2) Update Composer from the CLI:
+### 1. Require with [Composer](https://getcomposer.org/)
+```sh
+composer require orangehill/iseed
 ```
-    composer update
+
+**Laravel 5.3.7 and below** or **Laravel 4** need specific version
+
+```sh
+composer require orangehill/iseed:2.2 # Laravel 5.3.7 and below
+composer require orangehill/iseed:1.1 # Laravel 4
 ```
-#### Laravel 5 versions less than 5.5
-3) Add the service provider by opening a `app/config/app.php` file, and adding a new item to the `providers` array.
+
+### 2. Add Service Provider (Laravel 5.4 and below)
+
+Latest Laravel versions have auto dicovery and automatically add service provider - if you're using 5.4.x and below, remember to add it to `providers` array at `/app/config/app.php`:
+
+```php
+// ...
+Orangehill\Iseed\IseedServiceProvider::class,
 ```
-    Orangehill\Iseed\IseedServiceProvider::class
-```
+
 ## Artisan command options
 
 ### [table_name]
@@ -116,7 +105,7 @@ Optional parameter which defines the maximum number of entries seeded from a spe
 
 Example:
 ```
-artisan iseed users --max=10
+php artisan iseed users --max=10
 ```
 
 ### chunksize
@@ -124,7 +113,7 @@ Optional parameter which defines the size of data chunks for each insert query.
 
 Example:
 ```
-artisan iseed users --chunksize=100
+php artisan iseed users --chunksize=100
 ```
 
 ### exclude
@@ -132,8 +121,8 @@ Optional parameter which accepts comma separated list of columns that you'd like
 
 Example:
 ```
-artisan iseed users --exclude=id
-artisan iseed users --exclude=id,created_at,updated_at
+php artisan iseed users --exclude=id
+php artisan iseed users --exclude=id,created_at,updated_at
 ```
 
 ### prerun
@@ -143,15 +132,15 @@ You can assign multiple preruns for multiple table names by passing an array of 
 Example:
 The following command will make a seed file which will fire an event named 'someEvent' before seeding takes place.
 ```
-artisan iseed users --prerun=someEvent
+php artisan iseed users --prerun=someEvent
 ```
 The following example will assign `someUserEvent` to `users` table seed, and `someGroupEvent` to `groups` table seed, to be executed before seeding.
 ```
-artisan iseed users,groups --prerun=someUserEvent,someGroupEvent
+php artisan iseed users,groups --prerun=someUserEvent,someGroupEvent
 ```
 The following example will only assign a `someGroupEvent` to `groups` table seed, to be executed before seeding. Value for the users table prerun was omitted here, so `users` table seed will have no prerun event assigned.
 ```
-artisan iseed users,groups --prerun=,someGroupEvent
+php artisan iseed users,groups --prerun=,someGroupEvent
 ```
 
 ### postrun
@@ -161,15 +150,15 @@ You can assign multiple postruns for multiple table names by passing an array of
 Example:
 The following command will make a seed file which will fire an event named 'someEvent' after seeding was completed.
 ```
-artisan iseed users --postrun=someEvent
+php artisan iseed users --postrun=someEvent
 ```
 The following example will assign `someUserEvent` to `users` table seed, and `someGroupEvent` to `groups` table seed, to be executed after seeding.
 ```
-artisan iseed users,groups --postrun=someUserEvent,someGroupEvent
+php artisan iseed users,groups --postrun=someUserEvent,someGroupEvent
 ```
 The following example will only assign a `someGroupEvent` to `groups` table seed, to be executed after seeding. Value for the users table postrun was omitted here, so `users` table seed will have no postrun event assigned.
 ```
-artisan iseed users,groups --postrun=,someGroupEvent
+php artisan iseed users,groups --postrun=,someGroupEvent
 ```
 
 ### noindex
@@ -178,7 +167,7 @@ The use case for this feature is when you need to merge two seed files.
 
 Example:
 ```
-artisan iseed users --noindex
+php artisan iseed users --noindex
 ```
 
 ## Usage
@@ -187,91 +176,95 @@ To generate a seed file for your users table simply call: `\Iseed::generateSeed(
 
 This will create a file inside a `/database/seeds` (`/app/database/seeds` for Laravel 4), with the contents similar to following example:
 
-	<?php
+```php
+<?php
 
-	// File: /database/seeds/UsersTableSeeder.php
+// File: /database/seeds/UsersTableSeeder.php
 
-	class UsersTableSeeder extends Seeder {
+class UsersTableSeeder extends Seeder {
 
-		/**
-		 * Auto generated seed file
-		 *
-		 * @return void
-		 */
-		public function run()
-		{
-			\DB::table('users')->truncate();
-			\DB::table('users')->insert(array (
-				0 =>
-				array (
-					'id' => '1',
-					'email' => 'admin@admin.com',
-					'password' => '$2y$10$tUGCkQf/0NY3w1l9sobGsudt6UngnoVXx/lUoh9ElcSOD0ERRkK9C',
-					'permissions' => NULL,
-					'activated' => '1',
-					'activation_code' => NULL,
-					'activated_at' => NULL,
-					'last_login' => NULL,
-					'persist_code' => NULL,
-					'reset_password_code' => NULL,
-					'first_name' => NULL,
-					'last_name' => NULL,
-					'created_at' => '2013-06-11 07:47:40',
-					'updated_at' => '2013-06-11 07:47:40',
-				),
-				1 =>
-				array (
-					'id' => '2',
-					'email' => 'user@user.com',
-					'password' => '$2y$10$ImNvsMzK/BOgNSYgpjs/3OjMKMHeA9BH/hjl43EiuBuLkZGPMuZ2W',
-					'permissions' => NULL,
-					'activated' => '1',
-					'activation_code' => NULL,
-					'activated_at' => NULL,
-					'last_login' => '2013-06-11 07:54:57',
-					'persist_code' => '$2y$10$C0la8WuyqC6AU2TpUwj0I.E3Mrva8A3tuVFWxXN5u7jswRKzsYYHK',
-					'reset_password_code' => NULL,
-					'first_name' => NULL,
-					'last_name' => NULL,
-					'created_at' => '2013-06-11 07:47:40',
-					'updated_at' => '2013-06-11 07:54:57',
-				),
-			));
-		}
+    /**
+     * Auto generated seed file
+     *
+     * @return void
+        */
+    public function run()
+    {
+        \DB::table('users')->truncate();
+        \DB::table('users')->insert(array (
+            0 =>
+            array (
+                'id' => '1',
+                'email' => 'admin@admin.com',
+                'password' => '$2y$10$tUGCkQf/0NY3w1l9sobGsudt6UngnoVXx/lUoh9ElcSOD0ERRkK9C',
+                'permissions' => NULL,
+                'activated' => '1',
+                'activation_code' => NULL,
+                'activated_at' => NULL,
+                'last_login' => NULL,
+                'persist_code' => NULL,
+                'reset_password_code' => NULL,
+                'first_name' => NULL,
+                'last_name' => NULL,
+                'created_at' => '2013-06-11 07:47:40',
+                'updated_at' => '2013-06-11 07:47:40',
+            ),
+            1 =>
+            array (
+                'id' => '2',
+                'email' => 'user@user.com',
+                'password' => '$2y$10$ImNvsMzK/BOgNSYgpjs/3OjMKMHeA9BH/hjl43EiuBuLkZGPMuZ2W',
+                'permissions' => NULL,
+                'activated' => '1',
+                'activation_code' => NULL,
+                'activated_at' => NULL,
+                'last_login' => '2013-06-11 07:54:57',
+                'persist_code' => '$2y$10$C0la8WuyqC6AU2TpUwj0I.E3Mrva8A3tuVFWxXN5u7jswRKzsYYHK',
+                'reset_password_code' => NULL,
+                'first_name' => NULL,
+                'last_name' => NULL,
+                'created_at' => '2013-06-11 07:47:40',
+                'updated_at' => '2013-06-11 07:54:57',
+            ),
+        ));
+    }
 
-	}
+}
+```
 
 This command will also update `/database/seeds/DatabaseSeeder.php` (`/app/database/seeds/DatabaseSeeder.php` for Laravel 4) to include a call to this newly generated seed class.
 
 If you wish you can define custom iSeed template in which all the calls will be placed. You can do this by using `#iseed_start` and `#iseed_end` templates anywhere  within `/database/seeds/DatabaseSeeder.php` (`/app/database/seeds/DatabaseSeeder.php` for Laravel 4), for example:
 
-	<?php
+```php
+<?php
 
-	// File: /database/seeds/DatabaseSeeder.php
-	class DatabaseSeeder extends Seeder {
+// File: /database/seeds/DatabaseSeeder.php
+class DatabaseSeeder extends Seeder {
 
-		/**
-		 * Run the database seeds.
-		 *
-		 * @return void
-		 */
-		public function run()
-		{
-			Eloquent::unguard();
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+        */
+    public function run()
+    {
+        Eloquent::unguard();
 
-		    if(App::environment() == "local")
-		    {
-		        throw new \Exception('Only run this from production');
-		    }
+        if(App::environment() == "local")
+        {
+            throw new \Exception('Only run this from production');
+        }
 
-			#iseed_start
+        #iseed_start
 
-			// here all the calls for newly generated seeds will be stored.
+        // here all the calls for newly generated seeds will be stored.
 
-			#iseed_end
-		}
+        #iseed_end
+    }
 
-	}
+}
+```
 
 Alternatively you can run Iseed from the command line using Artisan, e.g. `php artisan iseed users`. For generation of multiple seed files comma separated list of table names should be send as an argument for command, e.g. `php artisan iseed users,posts,groups`.
 
@@ -288,4 +281,3 @@ To (re)seed the database go to the Terminal and run Laravel's `db:seed command` 
 Please note that some users encountered a problem with large DB table exports ([error when seeding from table with many records](https://github.com/orangehill/iseed/issues/4)). The issue was solved by splitting input data into smaller chunks of elements per insert statement. As you may need to change the chunk size value in some extreme cases where DB table has a large number of columns, the chunk size is configurable in iSeed's `config.php` file:
 
 	'chunk_size' => 500 // Maximum number of rows per insert statement
-
