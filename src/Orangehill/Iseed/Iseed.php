@@ -63,8 +63,11 @@ class Iseed
      */
     public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
     {
+        $isDefaultDatabase = true;
+
         if (!$database) {
             $database = config('database.default');
+            $isDefaultDatabase = false;
         }
 
         $this->databaseName = $database;
@@ -101,7 +104,8 @@ class Iseed
             $chunkSize,
             $prerunEvent,
             $postrunEvent,
-            $indexed
+            $indexed,
+            ($isDefaultDatabase? null : $database)
         );
 
         // Save a populated stub
@@ -220,7 +224,7 @@ class Iseed
      * @param  string   $postunEvent
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $database= null)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
 
@@ -229,11 +233,21 @@ class Iseed
         foreach ($chunks as $chunk) {
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
-            $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
-                $table,
-                $this->prettifyArray($chunk, $indexed)
-            );
+            if(!empty($database)){
+                $inserts .= sprintf(
+                    "\DB::connection('%s')->table('%s')->insert(%s);",
+                    $database,
+                    $table,
+                    $this->prettifyArray($chunk, $indexed)
+                );
+            }else{
+                $inserts .= sprintf(
+                    "\DB::table('%s')->insert(%s);",
+                    $table,
+                    $this->prettifyArray($chunk, $indexed)
+                );
+            }
+
         }
 
         $stub = str_replace('{{class}}', $class, $stub);
