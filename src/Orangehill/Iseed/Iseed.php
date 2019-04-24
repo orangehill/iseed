@@ -49,6 +49,11 @@ class Iseed
         return implode(PHP_EOL, $buffer);
     }
 
+    private function getStubFilePath()
+    {
+        return config('iseed::config.stub_path') ?? $this->getStubPath() . '/seed.stub';
+    }
+
     /**
      * Generates a seed file.
      * @param  string   $table
@@ -84,7 +89,7 @@ class Iseed
         $className = $this->generateClassName($table, $prefix, $suffix);
 
         // Get template for a seed file contents
-        $stub = $this->readStubFile($this->getStubPath() . '/seed.stub');
+        $stub = $this->readStubFile($this->getStubFilePath());
 
         // Get a seed folder path
         $seedPath = $this->getSeedPath();
