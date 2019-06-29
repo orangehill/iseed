@@ -65,7 +65,11 @@ class IseedServiceProvider extends ServiceProvider
      */
     protected function registerResources()
     {
-        $userConfigFile    = app()->configPath().'/iseed.php';
+        if (function_exists('config_path')) {
+            $userConfigFile = config_path('ide-helper.php');
+        } else {
+            $userConfigFile = base_path('config/ide-helper.php');
+        }
         $packageConfigFile = __DIR__.'/../../config/config.php';
         $config            = $this->app['files']->getRequire($packageConfigFile);
 
