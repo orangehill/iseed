@@ -170,6 +170,24 @@ Example:
 php artisan iseed users --noindex
 ```
 
+### skip
+By using --skip the query will skip the number of rows provided.
+
+The use case for this feature is when you need to generate seeds while also using the --max option to limit the query.
+
+Example:
+```
+php artisan iseed blog_posts --skip=1000
+```
+
+When using with the --max option:
+
+```
+php artisan iseed blog_posts --max=1000
+php artisan iseed blog_posts --skip=1000 --max=1000
+php artisan iseed blog_posts --skip=2000 --max=1000
+```
+
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments.
