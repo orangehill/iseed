@@ -15,7 +15,7 @@
     },
     "require-dev": {
         "mockery/mockery": "dev-master",
-        "illuminate/filesystem": "5.x",
+        "illuminate/filesystem": "5.x || 6.x",
         "laravel/framework": "^5.3.8",
         "phpunit/phpunit": "^5.7"
     },
