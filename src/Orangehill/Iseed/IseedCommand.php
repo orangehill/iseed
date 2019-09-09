@@ -37,6 +37,16 @@ class IseedCommand extends Command
      *
      * @return void
      */
+    public function handle()
+    {
+        return $this->fire();
+    }
+
+    /**
+     * Execute the console command (for <= 5.4).
+     *
+     * @return void
+     */
     public function fire()
     {
         // if clean option is checked empty iSeed template in DatabaseSeeder.php
@@ -45,7 +55,8 @@ class IseedCommand extends Command
         }
 
         $tables = explode(",", $this->argument('tables'));
-        $chunkSize = intval($this->option('max'));
+        $max = intval($this->option('max'));
+        $chunkSize = intval($this->option('chunksize'));
         $exclude = explode(",", $this->option('exclude'));
         $prerunEvents = explode(",", $this->option('prerun'));
         $postrunEvents = explode(",", $this->option('postrun'));
@@ -53,6 +64,12 @@ class IseedCommand extends Command
         $indexed = !$this->option('noindex');
         $orderBy = $this->option('orderby');
         $direction = $this->option('direction');
+        $prefix = $this->option('classnameprefix');
+        $suffix = $this->option('classnamesuffix');
+
+        if ($max < 1) {
+            $max = null;
+        }
 
         if ($chunkSize < 1) {
             $chunkSize = null;
@@ -72,14 +89,17 @@ class IseedCommand extends Command
             $tableIncrement++;
 
             // generate file and class name based on name of the table
-            list($fileName, $className) = $this->generateFileName($table);
+            list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
 
             // if file does not exist or force option is turned on generate seeder
             if (!\File::exists($fileName) || $this->option('force')) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
+                        $prefix,
+                        $suffix,
                         $this->option('database'),
+                        $max,
                         $chunkSize,
                         $exclude,
                         $prerunEvent,
@@ -99,7 +119,10 @@ class IseedCommand extends Command
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
+                        $prefix,
+                        $suffix,
                         $this->option('database'),
+                        $max,
                         $chunkSize,
                         $exclude,
                         $prerunEvent,
@@ -139,6 +162,7 @@ class IseedCommand extends Command
             array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
             array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
             array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
+            array('chunksize', null, InputOption::VALUE_OPTIONAL, 'size of data chunks for each insert query', null),
             array('exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
             array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),
             array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
@@ -146,6 +170,8 @@ class IseedCommand extends Command
             array('noindex', null, InputOption::VALUE_NONE, 'no indexing in the seed', null),
             array('orderby', null, InputOption::VALUE_OPTIONAL, 'orderby desc by column', null),
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
+            array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
+            array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
         );
     }
 
@@ -172,14 +198,14 @@ class IseedCommand extends Command
      * @param  string $table
      * @return string
      */
-    protected function generateFileName($table)
+    protected function generateFileName($table, $prefix=null, $suffix=null)
     {
         if (!\Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
         }
 
         // Generate class name and file name
-        $className = app('iseed')->generateClassName($table);
+        $className = app('iseed')->generateClassName($table, $prefix, $suffix);
         $seedPath = base_path() . config('iseed::config.path');
         return [$seedPath . '/' . $className . '.php', $className . '.php'];
     }

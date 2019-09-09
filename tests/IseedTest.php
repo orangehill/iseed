@@ -2102,7 +2102,7 @@ class IseedTest extends PHPUnit_Framework_TestCase
     {
         $hasTable = m::mock('Orangehill\Iseed\Iseed[hasTable]')->makePartial();
         $hasTable->shouldReceive('hasTable')->once()->andReturn(false);
-        $hasTable->generateSeed('nonexisting', 'database', 'numOfRows');
+        $hasTable->generateSeed('nonexisting', null, null, 'database', 'numOfRows');
     }
 
     public function testRepacksSeedData()
@@ -2150,6 +2150,6 @@ class IseedTest extends PHPUnit_Framework_TestCase
         $mocked->shouldReceive('populateStub')->once()->andReturn('populatedStub');
         $mocked->shouldReceive('updateDatabaseSeederRunMethod')->once()->with('ClassName')->andReturn(true);
         $composer->shouldReceive('dumpAutoloads')->once();
-        $mocked->generateSeed('tablename', 'database', 'numOfRows');
+        $mocked->generateSeed('tablename', null, null, 'database', 'numOfRows');
     }
 }
