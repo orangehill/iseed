@@ -116,6 +116,22 @@ Example:
 php artisan iseed users --chunksize=100
 ```
 
+### orderby
+Optional parameter which defines the column which will be used to order the results by, when used in conjunction with the max parameter that allows you to set the desired number of exported database entries.
+
+Example:
+```
+artisan iseed users --max=10 --orderby=id
+```
+
+### direction
+Optional parameter which allows you to set the direction of the ordering of results; used in conjuction with orderby parameter.
+
+Example:
+```
+artisan iseed users --max=10 --orderby=id --direction=desc
+```
+
 ### exclude
 Optional parameter which accepts comma separated list of columns that you'd like to exclude from tables that are being exported. In case of multiple tables, exclusion will be applied to all of them.
 
