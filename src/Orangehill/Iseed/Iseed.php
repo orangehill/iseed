@@ -8,46 +8,46 @@ use Illuminate\Support\Facades\Config;
 
 class Iseed
 {
-    /**
-     * Name of the database upon which the seed will be executed.
-     *
-     * @var string
-     */
-    protected $databaseName;
+	/**
+	 * Name of the database upon which the seed will be executed.
+	 *
+	 * @var string
+	 */
+	protected $databaseName;
 
-    /**
-     * New line character for seed files.
-     * Double quotes are mandatory!
-     *
-     * @var string
-     */
-    private $newLineCharacter = PHP_EOL;
+	/**
+	 * New line character for seed files.
+	 * Double quotes are mandatory!
+	 *
+	 * @var string
+	 */
+	private $newLineCharacter = PHP_EOL;
 
-    /**
-     * Desired indent for the code.
-     * For tabulator use \t
-     * Double quotes are mandatory!
-     *
-     * @var string
-     */
-    private $indentCharacter = "    ";
+	/**
+	 * Desired indent for the code.
+	 * For tabulator use \t
+	 * Double quotes are mandatory!
+	 *
+	 * @var string
+	 */
+	private $indentCharacter = "    ";
 
-    /**
-     * @var Composer
-     */
-    private $composer;
+	/**
+	 * @var Composer
+	 */
+	private $composer;
 
-    public function __construct(Filesystem $filesystem = null, Composer $composer = null)
-    {
-        $this->files = $filesystem ?: new Filesystem;
-        $this->composer = $composer ?: new Composer($this->files);
-    }
+	public function __construct(Filesystem $filesystem = null, Composer $composer = null)
+	{
+		$this->files = $filesystem ?: new Filesystem;
+		$this->composer = $composer ?: new Composer($this->files);
+	}
 
-    public function readStubFile($file)
-    {
-        $buffer = file($file, FILE_IGNORE_NEW_LINES);
-        return implode(PHP_EOL, $buffer);
-    }
+	public function readStubFile($file)
+	{
+		$buffer = file($file, FILE_IGNORE_NEW_LINES);
+		return implode(PHP_EOL, $buffer);
+	}
 
     /**
      * Generates a seed file.
@@ -133,7 +133,11 @@ class Iseed
 
     /**
      * Get the Data
-     * @param  string $table
+     * @param string $table
+     * @param $max
+     * @param null $exclude
+     * @param null $orderBy
+     * @param string $direction
      * @return Array
      */
     public function getData($table, $max, $exclude = null, $orderBy = null, $direction = 'ASC')
@@ -179,41 +183,41 @@ class Iseed
         return $dataArray;
     }
 
-    /**
-     * Checks if a database table exists
-     * @param string $table
-     * @return boolean
-     */
-    public function hasTable($table)
-    {
-        return \Schema::connection($this->databaseName)->hasTable($table);
-    }
+	/**
+	 * Checks if a database table exists
+	 * @param string $table
+	 * @return boolean
+	 */
+	public function hasTable($table)
+	{
+		return \Schema::connection($this->databaseName)->hasTable($table);
+	}
 
-    /**
-     * Generates a seed class name (also used as a filename)
-     * @param  string  $table
-     * @param  string  $prefix
-     * @param  string  $suffix
-     * @return string
-     */
-    public function generateClassName($table, $prefix=null, $suffix=null)
-    {
-        $tableString = '';
-        $tableName = explode('_', $table);
-        foreach ($tableName as $tableNameExploded) {
-            $tableString .= ucfirst($tableNameExploded);
-        }
-        return ($prefix ? $prefix : '') . ucfirst($tableString) . 'Table' . ($suffix ? $suffix : '') . 'Seeder';
-    }
+	/**
+	 * Generates a seed class name (also used as a filename)
+	 * @param string $table
+	 * @param string $prefix
+	 * @param string $suffix
+	 * @return string
+	 */
+	public function generateClassName($table, $prefix = null, $suffix = null)
+	{
+		$tableString = '';
+		$tableName = explode('_', $table);
+		foreach ($tableName as $tableNameExploded) {
+			$tableString .= ucfirst($tableNameExploded);
+		}
+		return ($prefix ? $prefix : '') . ucfirst($tableString) . 'Table' . ($suffix ? $suffix : '') . 'Seeder';
+	}
 
-    /**
-     * Get the path to the stub file.
-     * @return string
-     */
-    public function getStubPath()
-    {
-        return __DIR__ . DIRECTORY_SEPARATOR . 'Stubs';
-    }
+	/**
+	 * Get the path to the stub file.
+	 * @return string
+	 */
+	public function getStubPath()
+	{
+		return __DIR__ . DIRECTORY_SEPARATOR . 'Stubs';
+	}
 
     /**
      * Populate the place-holders in the seed stub.
@@ -306,122 +310,122 @@ class Iseed
 
     /**
      * Prettify a var_export of an array
-     * @param  array  $array
+     * @param array $array
+     * @param bool $indexed
      * @return string
      */
-    protected function prettifyArray($array, $indexed = true)
-    {
-        $content = ($indexed)
-            ? var_export($array, true)
-            : preg_replace("/[0-9]+ \=\>/i", '', var_export($array, true));
+	protected function prettifyArray($array, $indexed = true)
+	{
+		$content = ($indexed)
+			? var_export($array, true)
+			: preg_replace("/[0-9]+ \=\>/i", '', var_export($array, true));
 
-        $lines = explode("\n", $content);
+		$lines = explode("\n", $content);
 
-        $inString = false;
-        $tabCount = 3;
-        for ($i = 1; $i < count($lines); $i++) {
-            $lines[$i] = ltrim($lines[$i]);
+		$inString = false;
+		$tabCount = 3;
+		for ($i = 1; $i < count($lines); $i++) {
+			$lines[$i] = ltrim($lines[$i]);
 
-            //Check for closing bracket
-            if (strpos($lines[$i], ')') !== false) {
-                $tabCount--;
-            }
+			//Check for closing bracket
+			if (strpos($lines[$i], ')') !== false) {
+				$tabCount--;
+			}
 
-            //Insert tab count
-            if ($inString === false) {
-                for ($j = 0; $j < $tabCount; $j++) {
-                    $lines[$i] = substr_replace($lines[$i], $this->indentCharacter, 0, 0);
-                }
-            }
+			//Insert tab count
+			if ($inString === false) {
+				for ($j = 0; $j < $tabCount; $j++) {
+					$lines[$i] = substr_replace($lines[$i], $this->indentCharacter, 0, 0);
+				}
+			}
 
-            for ($j = 0; $j < strlen($lines[$i]); $j++) {
-                //skip character right after an escape \
-                if ($lines[$i][$j] == '\\') {
-                    $j++;
-                }
-                //check string open/end
-                else if ($lines[$i][$j] == '\'') {
-                    $inString = !$inString;
-                }
-            }
+			for ($j = 0; $j < strlen($lines[$i]); $j++) {
+				//skip character right after an escape \
+				if ($lines[$i][$j] == '\\') {
+					$j++;
+				} //check string open/end
+				else if ($lines[$i][$j] == '\'') {
+					$inString = !$inString;
+				}
+			}
 
-            //check for openning bracket
-            if (strpos($lines[$i], '(') !== false) {
-                $tabCount++;
-            }
-        }
+			//check for openning bracket
+			if (strpos($lines[$i], '(') !== false) {
+				$tabCount++;
+			}
+		}
 
-        $content = implode("\n", $lines);
+		$content = implode("\n", $lines);
 
-        return $content;
-    }
+		return $content;
+	}
 
-    /**
-     * Adds new lines to the passed content variable reference.
-     *
-     * @param string    $content
-     * @param int       $numberOfLines
-     */
-    private function addNewLines(&$content, $numberOfLines = 1)
-    {
-        while ($numberOfLines > 0) {
-            $content .= $this->newLineCharacter;
-            $numberOfLines--;
-        }
-    }
+	/**
+	 * Adds new lines to the passed content variable reference.
+	 *
+	 * @param string $content
+	 * @param int $numberOfLines
+	 */
+	private function addNewLines(&$content, $numberOfLines = 1)
+	{
+		while ($numberOfLines > 0) {
+			$content .= $this->newLineCharacter;
+			$numberOfLines--;
+		}
+	}
 
-    /**
-     * Adds indentation to the passed content reference.
-     *
-     * @param string    $content
-     * @param int       $numberOfIndents
-     */
-    private function addIndent(&$content, $numberOfIndents = 1)
-    {
-        while ($numberOfIndents > 0) {
-            $content .= $this->indentCharacter;
-            $numberOfIndents--;
-        }
-    }
+	/**
+	 * Adds indentation to the passed content reference.
+	 *
+	 * @param string $content
+	 * @param int $numberOfIndents
+	 */
+	private function addIndent(&$content, $numberOfIndents = 1)
+	{
+		while ($numberOfIndents > 0) {
+			$content .= $this->indentCharacter;
+			$numberOfIndents--;
+		}
+	}
 
-    /**
-     * Cleans the iSeed section
-     * @return bool
-     */
-    public function cleanSection()
-    {
-        $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+	/**
+	 * Cleans the iSeed section
+	 * @return bool
+	 */
+	public function cleanSection()
+	{
+		$databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
 
-        $content = $this->files->get($databaseSeederPath);
+		$content = $this->files->get($databaseSeederPath);
 
-        $content = preg_replace("/(\#iseed_start.+?)\#iseed_end/us", "#iseed_start\n\t\t#iseed_end", $content);
+		$content = preg_replace("/(\#iseed_start.+?)\#iseed_end/us", "#iseed_start\n\t\t#iseed_end", $content);
 
-        return $this->files->put($databaseSeederPath, $content) !== false;
-        return false;
-    }
+		return $this->files->put($databaseSeederPath, $content) !== false;
+		return false;
+	}
 
-    /**
-     * Updates the DatabaseSeeder file's run method (kudoz to: https://github.com/JeffreyWay/Laravel-4-Generators)
-     * @param  string  $className
-     * @return bool
-     */
-    public function updateDatabaseSeederRunMethod($className)
-    {
-        $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+	/**
+	 * Updates the DatabaseSeeder file's run method (kudoz to: https://github.com/JeffreyWay/Laravel-4-Generators)
+	 * @param string $className
+	 * @return bool
+	 */
+	public function updateDatabaseSeederRunMethod($className)
+	{
+		$databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
 
-        $content = $this->files->get($databaseSeederPath);
-        if (strpos($content, "\$this->call({$className}::class)") === false) {
-            if (
-                strpos($content, '#iseed_start') &&
-                strpos($content, '#iseed_end') &&
-                strpos($content, '#iseed_start') < strpos($content, '#iseed_end')
-            ) {
-                $content = preg_replace("/(\#iseed_start.+?)(\#iseed_end)/us", "$1\$this->call({$className}::class);{$this->newLineCharacter}{$this->indentCharacter}{$this->indentCharacter}$2", $content);
-            } else {
-                $content = preg_replace("/(run\(\).+?)}/us", "$1{$this->indentCharacter}\$this->call({$className}::class);{$this->newLineCharacter}{$this->indentCharacter}}", $content);
-            }
-        }
+		$content = $this->files->get($databaseSeederPath);
+		if (strpos($content, "\$this->call({$className}::class)") === false) {
+			if (
+				strpos($content, '#iseed_start') &&
+				strpos($content, '#iseed_end') &&
+				strpos($content, '#iseed_start') < strpos($content, '#iseed_end')
+			) {
+				$content = preg_replace("/(\#iseed_start.+?)(\#iseed_end)/us", "$1\$this->call({$className}::class);{$this->newLineCharacter}{$this->indentCharacter}{$this->indentCharacter}$2", $content);
+			} else {
+				$content = preg_replace("/(run\(\).+?)}/us", "$1{$this->indentCharacter}\$this->call({$className}::class);{$this->newLineCharacter}{$this->indentCharacter}}", $content);
+			}
+		}
 
-        return $this->files->put($databaseSeederPath, $content) !== false;
-    }
+		return $this->files->put($databaseSeederPath, $content) !== false;
+	}
 }
