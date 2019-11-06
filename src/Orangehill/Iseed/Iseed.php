@@ -51,15 +51,20 @@ class Iseed
 
     /**
      * Generates a seed file.
-     * @param  string   $table
-     * @param  string   $prefix
-     * @param  string   $suffix
-     * @param  string   $database
-     * @param  int      $max
-     * @param  string   $prerunEvent
-     * @param  string   $postunEvent
+     * @param string $table
+     * @param string $prefix
+     * @param string $suffix
+     * @param string $database
+     * @param int $max
+     * @param int $chunkSize
+     * @param null $exclude
+     * @param string $prerunEvent
+     * @param null $postrunEvent
+     * @param bool $dumpAuto
+     * @param bool $indexed
+     * @param null $orderBy
+     * @param string $direction
      * @return bool
-     * @throws Orangehill\Iseed\TableNotFoundException
      */
     public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
     {
@@ -96,6 +101,7 @@ class Iseed
         $seedContent = $this->populateStub(
             $className,
             $stub,
+            $database,
             $table,
             $dataArray,
             $chunkSize,
@@ -211,16 +217,18 @@ class Iseed
 
     /**
      * Populate the place-holders in the seed stub.
-     * @param  string   $class
-     * @param  string   $stub
-     * @param  string   $table
-     * @param  string   $data
-     * @param  int      $chunkSize
-     * @param  string   $prerunEvent
-     * @param  string   $postunEvent
+     * @param string $class
+     * @param string $stub
+     * @param string $database
+     * @param string $table
+     * @param array $data
+     * @param int $chunkSize
+     * @param string $prerunEvent
+     * @param null $postrunEvent
+     * @param bool $indexed
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $database, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
 
@@ -230,13 +238,15 @@ class Iseed
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
             $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
+                "\DB::connection('%s')->table('%s')->insert(%s);",
+                $database,
                 $table,
                 $this->prettifyArray($chunk, $indexed)
             );
         }
 
         $stub = str_replace('{{class}}', $class, $stub);
+        $stub = str_replace('{{connection}}', $database, $stub);
 
         $prerunEventInsert = '';
         if ($prerunEvent) {
