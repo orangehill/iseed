@@ -122,7 +122,7 @@ class Iseed
      */
     public function getSeedPath()
     {
-        return base_path() . config('iseed::config.path');
+        return base_path() . config('iseed.path');
     }
 
     /**
@@ -222,7 +222,7 @@ class Iseed
      */
     public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
     {
-        $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
+        $chunkSize = $chunkSize ?: config('iseed.chunk_size');
 
         $inserts = '';
         $chunks = array_chunk($data, $chunkSize);
@@ -380,7 +380,7 @@ class Iseed
      */
     public function cleanSection()
     {
-        $path = (config('iseed::config.seeder_path') ? config('iseed::config.seeder_path') : config('iseed::config.path') . '/DatabaseSeeder.php');
+        $path = (config('iseed.seeder_path') ? config('iseed.seeder_path') : config('iseed.path') . '/DatabaseSeeder.php');
         $databaseSeederPath = base_path() . $path;
 
         $content = $this->files->get($databaseSeederPath);
@@ -402,7 +402,7 @@ class Iseed
             return true;
         }
 
-        $path = (config('iseed::config.seeder_path') ? config('iseed::config.seeder_path') : config('iseed::config.path') . '/DatabaseSeeder.php');
+        $path = (config('iseed.seeder_path') ? config('iseed.seeder_path') : config('iseed.path') . '/DatabaseSeeder.php');
         $databaseSeederPath = base_path() . $path;
 
         $content = $this->files->get($databaseSeederPath);

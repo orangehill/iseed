@@ -20,7 +20,11 @@ class IseedServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        require base_path().'/vendor/autoload.php';
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../../config/config.php' => config_path('iseed.php'),
+            ], 'config');
+        }
     }
 
     /**
@@ -30,7 +34,7 @@ class IseedServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerResources();
+        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'iseed');
 
         $this->app->singleton('iseed', function($app) {
             return new Iseed;
@@ -56,24 +60,5 @@ class IseedServiceProvider extends ServiceProvider
     public function provides()
     {
         return array('iseed');
-    }
-
-    /**
-     * Register the package resources.
-     *
-     * @return void
-     */
-    protected function registerResources()
-    {
-        $userConfigFile    = app()->configPath().'/iseed.php';
-        $packageConfigFile = __DIR__.'/../../config/config.php';
-        $config            = $this->app['files']->getRequire($packageConfigFile);
-
-        if (file_exists($userConfigFile)) {
-            $userConfig = $this->app['files']->getRequire($userConfigFile);
-            $config     = array_replace_recursive($config, $userConfig);
-        }
-
-        $this->app['config']->set('iseed::config', $config);
     }
 }
