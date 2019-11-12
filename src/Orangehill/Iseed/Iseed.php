@@ -160,10 +160,10 @@ class Iseed
         if (!is_array($data)) {
             $data = $data->toArray();
         }
-        $dataArray = array();
+        $dataArray = [];
         if (!empty($data)) {
             foreach ($data as $row) {
-                $rowArray = array();
+                $rowArray = [];
                 foreach ($row as $columnName => $columnValue) {
                     $rowArray[$columnName] = $columnValue;
                 }
