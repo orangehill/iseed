@@ -186,6 +186,46 @@ Example:
 php artisan iseed users --noindex
 ```
 
+## Configuration
+
+Iseed comes with the following configuration, to change the default first publish the configuration with 
+
+```
+artisan vendor:publish --provider="Orangehill\Iseed\IseedServiceProvider" --tag="config"
+```
+
+### path
+Path where the seeders will be generated
+
+The default is `/database/seeds`
+
+### seeder_path
+Path where the Seeder is
+
+The default is `/database/seeds/DatabaseSeeder.php`
+
+### seeder_modification
+Whether the Seeder should be modified after running the iseed command
+
+The default is `true`
+
+### chunk_size
+Maximum number of rows per insert statement
+
+The default is `500`
+
+### stub_path
+You may alternatively set an absolute path to a custom stub file
+
+The default stub file is located in `/vendor/orangehill/iseed/src/Orangehill/Iseed/Stubs/seed.stub`
+
+### insert_command
+You may customize the line that preceeds the inserts inside the seeder
+
+You MUST keep both %s however, the first will be replaced by the table name and the second by the inserts themselves
+
+The default is `\DB::table('%s')->insert(%s);`
+
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments.
@@ -297,43 +337,3 @@ To (re)seed the database go to the Terminal and run Laravel's `db:seed command` 
 Please note that some users encountered a problem with large DB table exports ([error when seeding from table with many records](https://github.com/orangehill/iseed/issues/4)). The issue was solved by splitting input data into smaller chunks of elements per insert statement. As you may need to change the chunk size value in some extreme cases where DB table has a large number of columns, the chunk size is configurable in iSeed's `config.php` file:
 
 	'chunk_size' => 500 // Maximum number of rows per insert statement
-
-## Configuration
-
-Iseed comes with the following configuration, to change the default first publish the configuration with 
-
-```
-artisan vendor:publish --provider="Orangehill\Iseed\IseedServiceProvider" --tag="config"
-```
-
-### path
-Path where the seeders will be generated
-
-The default is `/database/seeds`
-
-### seeder_path
-Path where the Seeder is
-
-The default is `/database/seeds/DatabaseSeeder.php`
-
-### seeder_modification
-Whether the Seeder should be modified after running the iseed command
-
-The default is `true`
-
-### chunk_size
-Maximum number of rows per insert statement
-
-The default is `500`
-
-### stub_path
-You may alternatively set an absolute path to a custom stub file
-
-The default stub file is located in `/vendor/orangehill/iseed/src/Orangehill/Iseed/Stubs/seed.stub`
-
-### insert_command
-You may customize the line that preceeds the inserts inside the seeder
-
-You MUST keep both %s however, the first will be replaced by the table name and the second by the inserts themselves
-
-The default is `\DB::table('%s')->insert(%s);`
