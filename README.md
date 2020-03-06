@@ -186,6 +186,15 @@ Example:
 php artisan iseed users --noindex
 ```
 
+### keychecks
+By using --keychekcs the seed can be generated with `FOREIGN_KEY_CHECKS`.
+The use case for this feature is when you have an exisiting data in a table then you can run your seeder without truncating your tables. If you generate your seeds without truncating your database it might throw `foreign key constraint failed exception`. So, by using `--keychecks` option you can directly seed without the constraint error. On default, foreign key checks are disabled.
+
+Example:
+```
+php artisan iseed users --noindex
+```
+
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments.

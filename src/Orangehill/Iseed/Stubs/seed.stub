@@ -14,7 +14,10 @@ class {{class}} extends Seeder
     {
         {{prerun_event}}
 
+        {{disable_key_checks}}
         \DB::table('{{table}}')->delete();
+        {{enable_key_checks}}
+
         {{insert_statements}}
         
         {{postrun_event}}
