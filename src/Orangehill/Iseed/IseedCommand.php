@@ -70,7 +70,7 @@ class IseedCommand extends Command
             list($fileName, $className) = $this->generateFileName($table);
 
             // if file does not exist or force option is turned on generate seeder
-            if (!\File::exists($fileName) || $this->option('force')) {
+            if (!file_exists($fileName) || $this->option('force')) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
@@ -123,7 +123,7 @@ class IseedCommand extends Command
         return array(
             array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
             array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
+            array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', app('config')->get('database.default')),
             array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
             array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),
             array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
