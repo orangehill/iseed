@@ -14,7 +14,7 @@ class test_class extends Seeder
     {
         
 
-        \DB::table('test_table')->delete();
+        DB::table('test_table')->delete();
         
         
         

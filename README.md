@@ -206,8 +206,8 @@ class UsersTableSeeder extends Seeder {
         */
     public function run()
     {
-        \DB::table('users')->truncate();
-        \DB::table('users')->insert(array (
+        DB::table('users')->truncate();
+        DB::table('users')->insert(array (
             0 =>
             array (
                 'id' => '1',
