@@ -145,9 +145,9 @@ class IseedCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
-        );
+        return [
+            ['tables', InputArgument::REQUIRED, 'comma separated string of table names'],
+        ];
     }
 
     /**
@@ -157,22 +157,22 @@ class IseedCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
-            array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
-            array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
-            array('chunksize', null, InputOption::VALUE_OPTIONAL, 'size of data chunks for each insert query', null),
-            array('exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
-            array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),
-            array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
-            array('dumpauto', null, InputOption::VALUE_OPTIONAL, 'run composer dump-autoload', true),
-            array('noindex', null, InputOption::VALUE_NONE, 'no indexing in the seed', null),
-            array('orderby', null, InputOption::VALUE_OPTIONAL, 'orderby desc by column', null),
-            array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
-            array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
-            array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
-        );
+        return [
+            ['clean', null, InputOption::VALUE_NONE, 'clean iseed section', null],
+            ['force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')],
+            ['max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null],
+            ['chunksize', null, InputOption::VALUE_OPTIONAL, 'size of data chunks for each insert query', null],
+            ['exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null],
+            ['prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null],
+            ['postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null],
+            ['dumpauto', null, InputOption::VALUE_OPTIONAL, 'run composer dump-autoload', true],
+            ['noindex', null, InputOption::VALUE_NONE, 'no indexing in the seed', null],
+            ['orderby', null, InputOption::VALUE_OPTIONAL, 'orderby desc by column', null],
+            ['direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null],
+            ['classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null],
+            ['classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null],
+        ];
     }
 
     /**

@@ -55,7 +55,7 @@ class IseedServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array('iseed');
+        return ['iseed'];
     }
 
     /**
