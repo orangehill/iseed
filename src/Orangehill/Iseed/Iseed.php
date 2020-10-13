@@ -58,10 +58,11 @@ class Iseed
      * @param  int      $max
      * @param  string   $prerunEvent
      * @param  string   $postunEvent
+     * @param  bool     $keyChecks
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true,  $keyChecks = false, $orderBy = null, $direction = 'ASC')
     {
         if (!$database) {
             $database = config('database.default');
@@ -101,7 +102,8 @@ class Iseed
             $chunkSize,
             $prerunEvent,
             $postrunEvent,
-            $indexed
+            $indexed,
+            $keyChecks
         );
 
         // Save a populated stub
@@ -218,9 +220,11 @@ class Iseed
      * @param  int      $chunkSize
      * @param  string   $prerunEvent
      * @param  string   $postunEvent
+     * @param  bool     $indexed
+     * @param  bool     $keyChecks
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $keyChecks = false)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
 
@@ -277,6 +281,14 @@ class Iseed
         $stub = str_replace(
             '{{postrun_event}}', $postrunEventInsert, $stub
         );
+
+        if ($keyChecks) {
+            $stub = str_replace('{{enable_key_checks}}', "\DB::statement(\"SET FOREIGN_KEY_CHECKS = 1\");", $stub);
+            $stub = str_replace('{{disable_key_checks}}', "\DB::statement(\"SET FOREIGN_KEY_CHECKS = 0\");", $stub);
+        }else{
+            $stub = str_replace('{{enable_key_checks}}', "", $stub);
+            $stub = str_replace('{{disable_key_checks}}', "", $stub);
+        }
 
         $stub = str_replace('{{insert_statements}}', $inserts, $stub);
 
