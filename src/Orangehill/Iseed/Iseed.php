@@ -206,7 +206,7 @@ class Iseed
      */
     public function getStubPath()
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . 'Stubs';
+        return __DIR__ . DIRECTORY_SEPARATOR . 'stubs';
     }
 
     /**
