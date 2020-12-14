@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 class test_class extends Seeder
@@ -12,11 +14,11 @@ class test_class extends Seeder
      */
     public function run()
     {
-        {{prerun_event}}
+        
 
         \DB::table('test_table')->delete();
-        {{insert_statements}}
-
-        {{postrun_event}}
+        
+        
+        
     }
 }

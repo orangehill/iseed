@@ -1,8 +1,10 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
-class {{class}} extends Seeder
+class test_class extends Seeder
 {
 
     /**
@@ -14,9 +16,9 @@ class {{class}} extends Seeder
     {
         {{prerun_event}}
 
-        \DB::table('{{table}}')->delete();
+        \DB::table('test_table')->delete();
         {{insert_statements}}
-        
+
         {{postrun_event}}
     }
 }
