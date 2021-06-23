@@ -61,7 +61,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
     {
         if (!$database) {
             $database = config('database.default');
@@ -122,7 +122,7 @@ class Iseed
      */
     public function getSeedPath()
     {
-        return base_path() . config('iseed::config.path');
+        return (app()->version() > 7 ? base_path() . config('iseed::config.path') : base_path() . config('iseed::config.path_legacy'));
     }
 
     /**
@@ -139,7 +139,7 @@ class Iseed
             $result = $result->select(array_diff($allColumns, $exclude));
         }
 
-        if($orderBy) {
+        if ($orderBy) {
             $result = $result->orderBy($orderBy, $direction);
         }
 
@@ -190,7 +190,7 @@ class Iseed
      * @param  string  $suffix
      * @return string
      */
-    public function generateClassName($table, $prefix=null, $suffix=null)
+    public function generateClassName($table, $prefix = null, $suffix = null)
     {
         $tableString = '';
         $tableName = explode('_', $table);
@@ -253,7 +253,9 @@ class Iseed
         }
 
         $stub = str_replace(
-            '{{prerun_event}}', $prerunEventInsert, $stub
+            '{{prerun_event}}',
+            $prerunEventInsert,
+            $stub
         );
 
         if (!is_null($table)) {
@@ -275,7 +277,9 @@ class Iseed
         }
 
         $stub = str_replace(
-            '{{postrun_event}}', $postrunEventInsert, $stub
+            '{{postrun_event}}',
+            $postrunEventInsert,
+            $stub
         );
 
         $stub = str_replace('{{insert_statements}}', $inserts, $stub);
@@ -380,7 +384,8 @@ class Iseed
      */
     public function cleanSection()
     {
-        $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+        $seedPath = (app()->version() > 7 ? base_path() . config('iseed::config.path') : base_path() . config('iseed::config.path_legacy'));
+        $databaseSeederPath = $seedPath . '/DatabaseSeeder.php';
 
         $content = $this->files->get($databaseSeederPath);
 
@@ -397,7 +402,8 @@ class Iseed
      */
     public function updateDatabaseSeederRunMethod($className)
     {
-        $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+        $seedPath = (app()->version() > 7 ? base_path() . config('iseed::config.path') : base_path() . config('iseed::config.path_legacy'));
+        $databaseSeederPath = $seedPath . '/DatabaseSeeder.php';
 
         $content = $this->files->get($databaseSeederPath);
         if (strpos($content, "\$this->call({$className}::class)") === false) {
