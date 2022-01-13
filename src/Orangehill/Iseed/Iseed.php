@@ -61,7 +61,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $separate = null, $i = null)
     {
         if (!$database) {
             $database = config('database.default');
@@ -76,12 +76,19 @@ class Iseed
 
         // Get the data
         $data = $this->getData($table, $max, $exclude, $orderBy, $direction);
+        
+        if ($separate > 1) {
+            $groups = $data->split($separate);
+            if ($i + 1) {
+                $data = $groups[$i];
+            }
+        }
 
         // Repack the data
         $dataArray = $this->repackSeedData($data);
 
         // Generate class name
-        $className = $this->generateClassName($table, $prefix, $suffix);
+        $className = $this->generateClassName($table, $prefix, $suffix, ($separate > 1 ? ($i + 1) : null));
 
         // Get template for a seed file contents
         $stub = $this->readStubFile($this->getStubPath() . '/seed.stub');
@@ -190,14 +197,14 @@ class Iseed
      * @param  string  $suffix
      * @return string
      */
-    public function generateClassName($table, $prefix=null, $suffix=null)
+    public function generateClassName($table, $prefix=null, $suffix=null, $i=null)
     {
         $tableString = '';
         $tableName = explode('_', $table);
         foreach ($tableName as $tableNameExploded) {
             $tableString .= ucfirst($tableNameExploded);
         }
-        return ($prefix ? $prefix : '') . ucfirst($tableString) . 'Table' . ($suffix ? $suffix : '') . 'Seeder';
+        return ($prefix ? $prefix : '') . ucfirst($tableString) . 'Table' . ($suffix ? $suffix : '') . 'Seeder'. ($i ? $i : '');
     }
 
     /**
