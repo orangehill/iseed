@@ -198,7 +198,7 @@ class IseedCommand extends Command
      * @param  string $table
      * @return string
      */
-    protected function generateFileName($table, $prefix=null, $suffix=null)
+    protected function generateFileName($table, $prefix = null, $suffix = null)
     {
         if (!\Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
@@ -206,7 +206,8 @@ class IseedCommand extends Command
 
         // Generate class name and file name
         $className = app('iseed')->generateClassName($table, $prefix, $suffix);
-        $seedPath = base_path() . config('iseed::config.path');
+        $seedPath = (app()->version() > 7 ? base_path() . config('iseed::config.path') : base_path() . config('iseed::config.path_legacy'));
+
         return [$seedPath . '/' . $className . '.php', $className . '.php'];
     }
 }
