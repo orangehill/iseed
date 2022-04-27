@@ -10,19 +10,8 @@
 
 ### 1. Require with [Composer](https://getcomposer.org/)
 ```sh
-composer require orangehill/iseed
+composer require turboveja/iseed
 ```
-
-**Laravel 5.3.7 and below** or **Laravel 4** need specific version
-
-```sh
-composer require orangehill/iseed:2.2 # Laravel 5.3.7 and below
-composer require orangehill/iseed:1.1 # Laravel 4
-```
-
-### 2. Add Service Provider (Laravel 5.4 and below)
-
-Latest Laravel versions have auto dicovery and automatically add service provider - if you're using 5.4.x and below, remember to add it to `providers` array at `/app/config/app.php`:
 
 ```php
 // ...
