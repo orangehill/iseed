@@ -94,6 +94,7 @@ class Iseed
 
         // Get a populated stub file
         $seedContent = $this->populateStub(
+            $database,
             $className,
             $stub,
             $table,
@@ -211,6 +212,7 @@ class Iseed
 
     /**
      * Populate the place-holders in the seed stub.
+     * @param  string   $database
      * @param  string   $class
      * @param  string   $stub
      * @param  string   $table
@@ -220,7 +222,7 @@ class Iseed
      * @param  string   $postunEvent
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($database, $class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
 
@@ -230,7 +232,8 @@ class Iseed
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
             $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
+                "\DB::connection('%s')->table('%s')->insert(%s);",
+                $database,
                 $table,
                 $this->prettifyArray($chunk, $indexed)
             );
@@ -257,7 +260,13 @@ class Iseed
         );
 
         if (!is_null($table)) {
-            $stub = str_replace('{{table}}', $table, $stub);
+            $deletionStatement = sprintf(
+                "\DB::connection('%s')->table('%s')->delete();",
+                $database,
+                $table
+            );
+            
+            $stub = str_replace('{{table_deletion}}', $deletionStatement, $stub);
         }
 
         $postrunEventInsert = '';
