@@ -103,9 +103,11 @@ class Iseed
             $postrunEvent,
             $indexed
         );
-
-        // Save a populated stub
-        $this->files->put($seedsPath, $seedContent);
+        
+        // Create seed file if not existing
+        if(!$this->files->exists($seedsPath)){
+            touch($seedsPath);
+        }
 
         // Run composer dump-auto
         if ($dumpAuto) {
