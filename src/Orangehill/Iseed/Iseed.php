@@ -18,23 +18,18 @@ class Iseed
      * New line character for seed files.
      * Double quotes are mandatory!
      *
-     * @var string
      */
-    private $newLineCharacter = PHP_EOL;
+    private string $newLineCharacter = PHP_EOL;
 
     /**
      * Desired indent for the code.
      * For tabulator use \t
      * Double quotes are mandatory!
      *
-     * @var string
      */
-    private $indentCharacter = '    ';
+    private string $indentCharacter = '    ';
 
-    /**
-     * @var Composer
-     */
-    private $composer;
+    private readonly \Illuminate\Support\Composer $composer;
 
     public function __construct(Filesystem $filesystem = null, Composer $composer = null)
     {
@@ -42,7 +37,7 @@ class Iseed
         $this->composer = $composer ?: new Composer($this->files);
     }
 
-    public function readStubFile($file)
+    public function readStubFile($file): string
     {
         $buffer = file($file, FILE_IGNORE_NEW_LINES);
 
@@ -206,7 +201,7 @@ class Iseed
             $tableString .= ucfirst($tableNameExploded);
         }
 
-        return ($prefix ? $prefix : '').ucfirst($tableString).'Table'.($suffix ? $suffix : '').'Seeder';
+        return ($prefix ?: '').ucfirst($tableString).'Table'.($suffix ?: '').'Seeder';
     }
 
     /**
@@ -267,9 +262,7 @@ class Iseed
             '{{prerun_event}}', $prerunEventInsert, $stub
         );
 
-        if (! is_null($table)) {
-            $stub = str_replace('{{table}}', $table, $stub);
-        }
+        $stub = str_replace('{{table}}', $table, $stub);
 
         $postrunEventInsert = '';
         if ($postrunEvent) {
@@ -326,7 +319,7 @@ class Iseed
             $lines[$i] = ltrim($lines[$i]);
 
             //Check for closing bracket
-            if (strpos($lines[$i], ')') !== false) {
+            if (str_contains($lines[$i], ')')) {
                 $tabCount--;
             }
 
@@ -349,7 +342,7 @@ class Iseed
             }
 
             //check for openning bracket
-            if (strpos($lines[$i], '(') !== false) {
+            if (str_contains($lines[$i], '(')) {
                 $tabCount++;
             }
         }
@@ -398,7 +391,7 @@ class Iseed
 
         $content = $this->files->get($databaseSeederPath);
 
-        $content = preg_replace("/(\#iseed_start.+?)\#iseed_end/us", "#iseed_start\n\t\t#iseed_end", $content);
+        $content = preg_replace("/(\#iseed_start.+?)\#iseed_end/us", "#iseed_start\n\t\t#iseed_end", (string) $content);
 
         return $this->files->put($databaseSeederPath, $content) !== false;
 
@@ -416,15 +409,15 @@ class Iseed
         $databaseSeederPath = base_path().config('iseed::config.path').'/DatabaseSeeder.php';
 
         $content = $this->files->get($databaseSeederPath);
-        if (strpos($content, "\$this->call({$className}::class)") === false) {
+        if (!str_contains((string) $content, "\$this->call({$className}::class)")) {
             if (
-                strpos($content, '#iseed_start') &&
-                strpos($content, '#iseed_end') &&
-                strpos($content, '#iseed_start') < strpos($content, '#iseed_end')
+                strpos((string) $content, '#iseed_start') &&
+                strpos((string) $content, '#iseed_end') &&
+                strpos((string) $content, '#iseed_start') < strpos((string) $content, '#iseed_end')
             ) {
-                $content = preg_replace("/(\#iseed_start.+?)(\#iseed_end)/us", "$1\$this->call({$className}::class);{$this->newLineCharacter}{$this->indentCharacter}{$this->indentCharacter}$2", $content);
+                $content = preg_replace("/(\#iseed_start.+?)(\#iseed_end)/us", "$1\$this->call({$className}::class);{$this->newLineCharacter}{$this->indentCharacter}{$this->indentCharacter}$2", (string) $content);
             } else {
-                $content = preg_replace("/(run\(\).+?)}/us", "$1{$this->indentCharacter}\$this->call({$className}::class);{$this->newLineCharacter}{$this->indentCharacter}}", $content);
+                $content = preg_replace("/(run\(\).+?)}/us", "$1{$this->indentCharacter}\$this->call({$className}::class);{$this->newLineCharacter}{$this->indentCharacter}}", (string) $content);
             }
         }
 
