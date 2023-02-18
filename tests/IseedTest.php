@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -7,7 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 class IseedTest extends TestCase
 {
-    protected static $stubsDir, $testStubsDir;
+    protected static $stubsDir;
+
+    protected static $testStubsDir;
 
     public function __construct()
     {

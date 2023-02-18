@@ -39,6 +39,12 @@
             "Orangehill\\Iseed\\Tests\\": "tests"
         }
     },
+    "scripts": {
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage",
+        "format": "vendor/bin/pint"
+    },
     "extra": {
         "laravel": {
             "providers": [

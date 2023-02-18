@@ -54,14 +54,14 @@ class IseedCommand extends Command
             app('iseed')->cleanSection();
         }
 
-        $tables = explode(",", $this->argument('tables'));
+        $tables = explode(',', $this->argument('tables'));
         $max = intval($this->option('max'));
         $chunkSize = intval($this->option('chunksize'));
-        $exclude = explode(",", $this->option('exclude'));
-        $prerunEvents = explode(",", $this->option('prerun'));
-        $postrunEvents = explode(",", $this->option('postrun'));
+        $exclude = explode(',', $this->option('exclude'));
+        $prerunEvents = explode(',', $this->option('prerun'));
+        $postrunEvents = explode(',', $this->option('postrun'));
         $dumpAuto = intval($this->option('dumpauto'));
-        $indexed = !$this->option('noindex');
+        $indexed = ! $this->option('noindex');
         $orderBy = $this->option('orderby');
         $direction = $this->option('direction');
         $prefix = $this->option('classnameprefix');
@@ -89,10 +89,10 @@ class IseedCommand extends Command
             $tableIncrement++;
 
             // generate file and class name based on name of the table
-            list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
+            [$fileName, $className] = $this->generateFileName($table, $prefix, $suffix);
 
             // if file does not exist or force option is turned on generate seeder
-            if (!\File::exists($fileName) || $this->option('force')) {
+            if (! \File::exists($fileName) || $this->option('force')) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
@@ -111,10 +111,11 @@ class IseedCommand extends Command
                     ),
                     $table
                 );
+
                 continue;
             }
 
-            if ($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
+            if ($this->confirm('File '.$className.' already exist. Do you wish to override it? [yes|no]')) {
                 // if user said yes overwrite old seeder
                 $this->printResult(
                     app('iseed')->generateSeed(
@@ -135,7 +136,6 @@ class IseedCommand extends Command
             }
         }
 
-        return;
     }
 
     /**
@@ -145,9 +145,9 @@ class IseedCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
-        );
+        return [
+            ['tables', InputArgument::REQUIRED, 'comma separated string of table names'],
+        ];
     }
 
     /**
@@ -157,35 +157,36 @@ class IseedCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
-            array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
-            array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
-            array('chunksize', null, InputOption::VALUE_OPTIONAL, 'size of data chunks for each insert query', null),
-            array('exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
-            array('prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null),
-            array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
-            array('dumpauto', null, InputOption::VALUE_OPTIONAL, 'run composer dump-autoload', true),
-            array('noindex', null, InputOption::VALUE_NONE, 'no indexing in the seed', null),
-            array('orderby', null, InputOption::VALUE_OPTIONAL, 'orderby desc by column', null),
-            array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
-            array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
-            array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
-        );
+        return [
+            ['clean', null, InputOption::VALUE_NONE, 'clean iseed section', null],
+            ['force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')],
+            ['max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null],
+            ['chunksize', null, InputOption::VALUE_OPTIONAL, 'size of data chunks for each insert query', null],
+            ['exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null],
+            ['prerun', null, InputOption::VALUE_OPTIONAL, 'prerun event name', null],
+            ['postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null],
+            ['dumpauto', null, InputOption::VALUE_OPTIONAL, 'run composer dump-autoload', true],
+            ['noindex', null, InputOption::VALUE_NONE, 'no indexing in the seed', null],
+            ['orderby', null, InputOption::VALUE_OPTIONAL, 'orderby desc by column', null],
+            ['direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null],
+            ['classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null],
+            ['classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null],
+        ];
     }
 
     /**
      * Provide user feedback, based on success or not.
      *
-     * @param  boolean $successful
-     * @param  string $table
+     * @param  bool  $successful
+     * @param  string  $table
      * @return void
      */
     protected function printResult($successful, $table)
     {
         if ($successful) {
             $this->info("Created a seed file from table {$table}");
+
             return;
         }
 
@@ -195,18 +196,19 @@ class IseedCommand extends Command
     /**
      * Generate file name, to be used in test wether seed file already exist
      *
-     * @param  string $table
+     * @param  string  $table
      * @return string
      */
-    protected function generateFileName($table, $prefix=null, $suffix=null)
+    protected function generateFileName($table, $prefix = null, $suffix = null)
     {
-        if (!\Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
+        if (! \Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
         }
 
         // Generate class name and file name
         $className = app('iseed')->generateClassName($table, $prefix, $suffix);
-        $seedPath = base_path() . config('iseed::config.path');
-        return [$seedPath . '/' . $className . '.php', $className . '.php'];
+        $seedPath = base_path().config('iseed::config.path');
+
+        return [$seedPath.'/'.$className.'.php', $className.'.php'];
     }
 }

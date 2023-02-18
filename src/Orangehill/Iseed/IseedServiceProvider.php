@@ -32,16 +32,16 @@ class IseedServiceProvider extends ServiceProvider
     {
         $this->registerResources();
 
-        $this->app->singleton('iseed', function($app) {
+        $this->app->singleton('iseed', function ($app) {
             return new Iseed;
         });
 
-        $this->app->booting(function() {
+        $this->app->booting(function () {
             $loader = \Illuminate\Foundation\AliasLoader::getInstance();
             $loader->alias('Iseed', 'Orangehill\Iseed\Facades\Iseed');
         });
 
-        $this->app->singleton('command.iseed', function($app) {
+        $this->app->singleton('command.iseed', function ($app) {
             return new IseedCommand;
         });
 
@@ -55,7 +55,7 @@ class IseedServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array('iseed');
+        return ['iseed'];
     }
 
     /**
@@ -65,13 +65,13 @@ class IseedServiceProvider extends ServiceProvider
      */
     protected function registerResources()
     {
-        $userConfigFile    = app()->configPath().'/iseed.php';
+        $userConfigFile = app()->configPath().'/iseed.php';
         $packageConfigFile = __DIR__.'/../../config/config.php';
-        $config            = $this->app['files']->getRequire($packageConfigFile);
+        $config = $this->app['files']->getRequire($packageConfigFile);
 
         if (file_exists($userConfigFile)) {
             $userConfig = $this->app['files']->getRequire($userConfigFile);
-            $config     = array_replace_recursive($config, $userConfig);
+            $config = array_replace_recursive($config, $userConfig);
         }
 
         $this->app['config']->set('iseed::config', $config);
