@@ -10,8 +10,8 @@ use Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromStrictNativeCallRect
 
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
+        __DIR__.'/src',
+        __DIR__.'/tests',
     ]);
 
     // register a single rule
@@ -25,7 +25,7 @@ return static function (RectorConfig $rectorConfig): void {
     ]);
 
 //     define sets of rules
-        $rectorConfig->sets([
-            LevelSetList::UP_TO_PHP_81
-        ]);
+    $rectorConfig->sets([
+        LevelSetList::UP_TO_PHP_81,
+    ]);
 };

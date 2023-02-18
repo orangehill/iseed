@@ -10,12 +10,12 @@
         }
     ],
     "require": {
-        "php": "^8.1",
-        "illuminate/support": "^10.0"
+        "php": "^8.0.2|^8.1|^8.2",
+        "illuminate/support": "^9.0|^10.0"
     },
     "require-dev": {
-        "illuminate/filesystem": "^10.0",
-        "laravel/framework": "^10.0",
+        "illuminate/filesystem": "^9.0|^10.0",
+        "laravel/framework": "^9.0|^10.0",
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.0.0",
         "nunomaduro/collision": "^6.0",
