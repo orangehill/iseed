@@ -11,14 +11,14 @@ class IseedServiceProvider extends ServiceProvider
      *
      * @var bool
      */
-    protected $defer = false;
+    protected bool $defer = false;
 
     /**
      * Bootstrap the application events.
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         require base_path().'/vendor/autoload.php';
     }
@@ -28,7 +28,7 @@ class IseedServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->registerResources();
 
@@ -49,7 +49,7 @@ class IseedServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return ['iseed'];
     }
@@ -59,7 +59,7 @@ class IseedServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerResources()
+    protected function registerResources(): void
     {
         $userConfigFile = app()->configPath().'/iseed.php';
         $packageConfigFile = __DIR__.'/../../config/config.php';
