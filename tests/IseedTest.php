@@ -17,7 +17,7 @@ class IseedTest extends TestCase
         static::$testStubsDir = __DIR__.'/stubs';
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         m::close();
     }
