@@ -68,7 +68,7 @@ class Iseed
      *
      * @return bool
      */
-    public function generateSeed( string $table, string $prefix = null, string $suffix = null, string $database = null, int $max = 0, int $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, bool $dumpAuto = true, bool $indexed = true, ?string $orderBy = null, string $direction = 'ASC' ): bool
+    public function generateSeed( string $table, string $prefix = null, string $suffix = null, string $database = null, int|string $max = 0, int $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, bool $dumpAuto = true, bool $indexed = true, ?string $orderBy = null, string $direction = 'ASC' ): bool
     {
         if (!$database) {
             $database = config('database.default');
@@ -144,7 +144,7 @@ class Iseed
      *
      * @return array
      */
-    public function getData( string $table, int $max, ?array $exclude = null, ?string $orderBy = null, ?string $direction = 'ASC' ): array
+    public function getData( string $table, int|string $max, ?array $exclude = null, ?string $orderBy = null, ?string $direction = 'ASC' ): array
     {
         $result = DB::connection($this->databaseName)->table($table);
 

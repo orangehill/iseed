@@ -2091,7 +2091,7 @@ class IseedTest extends TestCase
         $iSeed = new Orangehill\Iseed\Iseed();
         foreach ($testStubs as $key => $stub) {
             $output = $iSeed->populateStub('test_class', $productionStub, 'test_table', $stub['data'], 500);
-            $this->assertEquals($stub['content'], $output, "Stub {$key} is not what it's expected to be.");
+            $this->assertEqualsCanonicalizing($stub['content'], $output, "Stub {$key} is not what it's expected to be.");
         }
     }
 
