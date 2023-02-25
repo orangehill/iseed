@@ -40,7 +40,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function getEnvironmentSetUp($app)
     {
         // Setup default database to use sqlite :memory:
-        $app['config']->set('iseed::config.path', '\temp');
+        $app['config']->set('iseed::config.path', '/temp');
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
             'driver'   => 'sqlite',
@@ -49,7 +49,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
         ]);
 
         File::makeDirectory(base_path(config('iseed::config.path')));
-        File::put(base_path(config('iseed::config.path')).'\DatabaseSeeder.php', '<?php ');
+        File::put(base_path(config('iseed::config.path')).'/DatabaseSeeder.php', '<?php ');
 
     }
 }
