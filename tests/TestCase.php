@@ -10,7 +10,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function setUp(): void
     {
         parent::setUp();
-
         $this->loadMigrationsFrom(__DIR__ . '/support');
         $this->artisan('migrate', ['--database' => 'testbench'])->run();
 
