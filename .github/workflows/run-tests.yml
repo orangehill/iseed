@@ -1,0 +1,49 @@
+name: run-tests
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        php: [8.2, 8.1]
+        laravel: [10.*, 9.*]
+        dependency-version: [prefer-lowest, prefer-stable]
+        include:
+          -   laravel: 10.*
+              testbench: 8.*
+          -   laravel: 9.*
+              testbench: 7.*
+        exclude:
+          -   laravel: 10.*
+              php: 8.0.2
+
+
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
+
+    steps:
+      -   name: Checkout code
+          uses: actions/checkout@v3
+
+      -   name: Setup PHP
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: ${{ matrix.php }}
+            extensions: curl, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, iconv
+            coverage: none
+
+      -   name: Install dependencies
+          run: |
+            composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+            composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+
+      -   name: Setup Problem Matches
+          run: |
+            echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+            echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      -   name: Execute tests
+          run: vendor/bin/phpunit

@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -7,7 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 class IseedTest extends TestCase
 {
-    protected static $stubsDir, $testStubsDir;
+    protected static $stubsDir;
+
+    protected static $testStubsDir;
 
     public function __construct()
     {
@@ -17,7 +20,7 @@ class IseedTest extends TestCase
         static::$testStubsDir = __DIR__.'/stubs';
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         m::close();
     }
@@ -2088,7 +2091,7 @@ class IseedTest extends TestCase
         $iSeed = new Orangehill\Iseed\Iseed();
         foreach ($testStubs as $key => $stub) {
             $output = $iSeed->populateStub('test_class', $productionStub, 'test_table', $stub['data'], 500);
-            $this->assertEquals($stub['content'], $output, "Stub {$key} is not what it's expected to be.");
+            $this->assertEqualsCanonicalizing($stub['content'], $output, "Stub {$key} is not what it's expected to be.");
         }
     }
 
