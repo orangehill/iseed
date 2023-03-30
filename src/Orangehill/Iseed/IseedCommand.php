@@ -66,6 +66,7 @@ class IseedCommand extends Command
         $direction = $this->option('direction');
         $prefix = $this->option('classnameprefix');
         $suffix = $this->option('classnamesuffix');
+        $separate = intval($this->option('separate'));
 
         if ($max < 1) {
             $max = null;
@@ -74,6 +75,8 @@ class IseedCommand extends Command
         if ($chunkSize < 1) {
             $chunkSize = null;
         }
+        
+        $j = $separate > 1 ? $separate : 1;
 
         $tableIncrement = 0;
         foreach ($tables as $table) {
@@ -88,50 +91,60 @@ class IseedCommand extends Command
             }
             $tableIncrement++;
 
-            // generate file and class name based on name of the table
-            list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
+            for ($i = 0; $i < $j; $i++) {
+                // generate file and class name based on name of the table
+                list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix, ($separate > 1 ? ($i + 1) : null));
 
-            // if file does not exist or force option is turned on generate seeder
-            if (!\File::exists($fileName) || $this->option('force')) {
-                $this->printResult(
-                    app('iseed')->generateSeed(
+                // if file does not exist or force option is turned on generate seeder
+                if (!\File::exists($fileName) || $this->option('force')) {
+                    $this->printResult(
+                        app('iseed')->generateSeed(
+                            $table,
+                            $prefix,
+                            $suffix,
+                            $this->option('database'),
+                            $max,
+                            $chunkSize,
+                            $exclude,
+                            $prerunEvent,
+                            $postrunEvent,
+                            $dumpAuto,
+                            $indexed,
+                            $orderBy,
+                            $direction,
+                            $separate,
+                            ($separate > 1 ? $i : null)
+                        ),
                         $table,
-                        $prefix,
-                        $suffix,
-                        $this->option('database'),
-                        $max,
-                        $chunkSize,
-                        $exclude,
-                        $prerunEvent,
-                        $postrunEvent,
-                        $dumpAuto,
-                        $indexed,
-                        $orderBy,
-                        $direction
-                    ),
-                    $table
-                );
-                continue;
-            }
+                        ($separate > 1 ? ($i + 1) : null)
+                    );
+                    continue;
+                }
 
-            if ($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
-                // if user said yes overwrite old seeder
-                $this->printResult(
-                    app('iseed')->generateSeed(
+                if ($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
+                    // if user said yes overwrite old seeder
+                    $this->printResult(
+                        app('iseed')->generateSeed(
+                            $table,
+                            $prefix,
+                            $suffix,
+                            $this->option('database'),
+                            $max,
+                            $chunkSize,
+                            $exclude,
+                            $prerunEvent,
+                            $postrunEvent,
+                            $dumpAuto,
+                            $indexed,
+                            $orderBy,
+                            $direction,
+                            $separate,
+                            ($separate > 1 ? $i : null)
+                        ),
                         $table,
-                        $prefix,
-                        $suffix,
-                        $this->option('database'),
-                        $max,
-                        $chunkSize,
-                        $exclude,
-                        $prerunEvent,
-                        $postrunEvent,
-                        $dumpAuto,
-                        $indexed
-                    ),
-                    $table
-                );
+                        ($separate > 1 ? ($i + 1) : null)
+                    );
+                }
             }
         }
 
@@ -172,6 +185,7 @@ class IseedCommand extends Command
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
+            array('separate', null, InputOption::VALUE_OPTIONAL, 'separate file', null),
         );
     }
 
@@ -185,11 +199,11 @@ class IseedCommand extends Command
     protected function printResult($successful, $table)
     {
         if ($successful) {
-            $this->info("Created a seed file from table {$table}");
+            $this->info("Created a seed" . (' ' . $i . ' ' ?? ' ') . "file from table {$table}");
             return;
         }
 
-        $this->error("Could not create seed file from table {$table}");
+        $this->error("Could not create seed" . (' ' . $i . ' ' ?? ' ') . "file from table {$table}");
     }
 
     /**
@@ -205,7 +219,7 @@ class IseedCommand extends Command
         }
 
         // Generate class name and file name
-        $className = app('iseed')->generateClassName($table, $prefix, $suffix);
+        $className = app('iseed')->generateClassName($table, $prefix, $suffix, $i);
         $seedPath = base_path() . config('iseed::config.path');
         return [$seedPath . '/' . $className . '.php', $className . '.php'];
     }
