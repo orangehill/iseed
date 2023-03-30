@@ -310,8 +310,6 @@ class Iseed
         $inString = false;
         $tabCount = 3;
         for ($i = 1; $i < count($lines); $i++) {
-            $lines[$i] = ltrim($lines[$i]);
-
             //Check for closing bracket
             if (strpos($lines[$i], ')') !== false) {
                 $tabCount--;
