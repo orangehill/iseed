@@ -1,5 +1,5 @@
 {
-    "name": "orangehill/iseed",
+    "name": "phill54/iseed",
     "description": "Generate a new Laravel database seed file based on data from the existing database table.",
     "keywords": ["laravel", "generators", "seed", "artisan"],
     "license": "BSD-2-Clause",
