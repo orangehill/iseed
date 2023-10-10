@@ -186,6 +186,14 @@ Example:
 php artisan iseed users --noindex
 ```
 
+### noseed
+By using --noseed the seeder file will be generated, but will not be included in the `DatabaseSeeder.php`
+
+Example:
+```
+php artisan iseed users --noseed
+```
+
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments.
