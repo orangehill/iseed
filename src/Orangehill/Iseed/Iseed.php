@@ -144,7 +144,6 @@ class Iseed
             $result = $result->where($where);
         }
 
-        dd($result->toSql());
         if ($orderBy) {
             $result = $result->orderBy($orderBy, $direction);
         }

@@ -75,6 +75,9 @@ class IseedCommand extends Command
         if ($this->option('where') && !$where) {
             throw new LogicException('where clause json malformed');
         }
+        if ($where && count($tables) > 1) {
+            throw new LogicException('please specify only one table when using where clause');
+        }
 
         if ($max < 1) {
             $max = null;
