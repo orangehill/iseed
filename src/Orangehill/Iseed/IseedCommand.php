@@ -2,9 +2,13 @@
 
 namespace Orangehill\Iseed;
 
+use Config;
+use File;
 use Illuminate\Console\Command;
+use Schema;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Mime\Exception\LogicException;
 
 class IseedCommand extends Command
 {
@@ -25,7 +29,7 @@ class IseedCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @return \Orangehill\Iseed\IseedCommand
+     * @return IseedCommand
      */
     public function __construct()
     {
@@ -55,6 +59,7 @@ class IseedCommand extends Command
         }
 
         $tables = explode(",", $this->argument('tables'));
+
         $max = intval($this->option('max'));
         $chunkSize = intval($this->option('chunksize'));
         $exclude = explode(",", $this->option('exclude'));
@@ -66,6 +71,10 @@ class IseedCommand extends Command
         $direction = $this->option('direction');
         $prefix = $this->option('classnameprefix');
         $suffix = $this->option('classnamesuffix');
+        $where = json_decode($this->option('where'), true);
+        if ($this->option('where') && !$where) {
+            throw new LogicException('where clause json malformed');
+        }
 
         if ($max < 1) {
             $max = null;
@@ -92,7 +101,7 @@ class IseedCommand extends Command
             list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
 
             // if file does not exist or force option is turned on generate seeder
-            if (!\File::exists($fileName) || $this->option('force')) {
+            if (!File::exists($fileName) || $this->option('force')) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
@@ -107,7 +116,8 @@ class IseedCommand extends Command
                         $dumpAuto,
                         $indexed,
                         $orderBy,
-                        $direction
+                        $direction,
+                        $where
                     ),
                     $table
                 );
@@ -160,7 +170,7 @@ class IseedCommand extends Command
         return array(
             array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
             array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
+            array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', Config::get('database.default')),
             array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
             array('chunksize', null, InputOption::VALUE_OPTIONAL, 'size of data chunks for each insert query', null),
             array('exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
@@ -172,6 +182,7 @@ class IseedCommand extends Command
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
+            array('where', null, InputOption::VALUE_OPTIONAL, 'where calause', null),
         );
     }
 
@@ -200,7 +211,7 @@ class IseedCommand extends Command
      */
     protected function generateFileName($table, $prefix=null, $suffix=null)
     {
-        if (!\Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
+        if (!Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
         }
 
