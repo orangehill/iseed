@@ -141,7 +141,7 @@ class Iseed
             $result = $result->select(array_diff($allColumns, $exclude));
         }
         if ($where) {
-            $result = $result->where($where);
+            $result = $result->where($where, null, null, 'or');
         }
 
         if ($orderBy) {
