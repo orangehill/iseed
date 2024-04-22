@@ -36,10 +36,7 @@ class IseedServiceProvider extends ServiceProvider
             return new Iseed;
         });
 
-        $this->app->booting(function() {
-            $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-            $loader->alias('Iseed', 'Orangehill\Iseed\Facades\Iseed');
-        });
+        $this->app->alias('Iseed', 'Orangehill\Iseed\Facades\Iseed');
 
         $this->app->singleton('command.iseed', function($app) {
             return new IseedCommand;
@@ -65,7 +62,11 @@ class IseedServiceProvider extends ServiceProvider
      */
     protected function registerResources()
     {
-        $userConfigFile    = app()->configPath().'/iseed.php';
+        if (function_exists('config_path')) {
+            $userConfigFile = config_path('ide-helper.php');
+        } else {
+            $userConfigFile = base_path('config/ide-helper.php');
+        }
         $packageConfigFile = __DIR__.'/../../config/config.php';
         $config            = $this->app['files']->getRequire($packageConfigFile);
 
