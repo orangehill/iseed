@@ -66,6 +66,9 @@ class IseedCommand extends Command
         $direction = $this->option('direction');
         $prefix = $this->option('classnameprefix');
         $suffix = $this->option('classnamesuffix');
+        $stubsDir = $this->option('stubsdir');
+
+        $iseed = app('iseed')->setStubPath($stubsDir);
 
         if ($max < 1) {
             $max = null;
@@ -94,7 +97,7 @@ class IseedCommand extends Command
             // if file does not exist or force option is turned on generate seeder
             if (!\File::exists($fileName) || $this->option('force')) {
                 $this->printResult(
-                    app('iseed')->generateSeed(
+                    $iseed->generateSeed(
                         $table,
                         $prefix,
                         $suffix,
@@ -117,7 +120,7 @@ class IseedCommand extends Command
             if ($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
                 // if user said yes overwrite old seeder
                 $this->printResult(
-                    app('iseed')->generateSeed(
+                    $iseed->generateSeed(
                         $table,
                         $prefix,
                         $suffix,
@@ -172,6 +175,7 @@ class IseedCommand extends Command
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
+            array('stubsdir', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', __DIR__ . DIRECTORY_SEPARATOR . 'stubs'),
         );
     }
 
