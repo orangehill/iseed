@@ -37,8 +37,11 @@ class Iseed
      */
     private $composer;
 
+    private $stubsDir;
+
     public function __construct(Filesystem $filesystem = null, Composer $composer = null)
     {
+        $this->stubsDir = __DIR__ . DIRECTORY_SEPARATOR . 'stubs';
         $this->files = $filesystem ?: new Filesystem;
         $this->composer = $composer ?: new Composer($this->files);
     }
@@ -206,7 +209,17 @@ class Iseed
      */
     public function getStubPath()
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . 'stubs';
+        return $this->stubsDir;
+    }
+
+    /**
+     * Set the path to the stub file.
+     */
+    public function setStubPath(string $dir)
+    {
+        $this->stubsDir = $dir;
+
+        return $this;
     }
 
     /**
