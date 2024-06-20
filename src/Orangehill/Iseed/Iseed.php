@@ -214,7 +214,7 @@ class Iseed
      * @param  string   $class
      * @param  string   $stub
      * @param  string   $table
-     * @param  string   $data
+     * @param  array   $data
      * @param  int      $chunkSize
      * @param  string   $prerunEvent
      * @param  string   $postunEvent
