@@ -57,7 +57,7 @@ class Iseed
      * @param  string   $database
      * @param  int      $max
      * @param  string   $prerunEvent
-     * @param  string   $postunEvent
+     * @param  string   $postrunEvent
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
@@ -217,7 +217,7 @@ class Iseed
      * @param  string   $data
      * @param  int      $chunkSize
      * @param  string   $prerunEvent
-     * @param  string   $postunEvent
+     * @param  string   $postrunEvent
      * @return string
      */
     public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
