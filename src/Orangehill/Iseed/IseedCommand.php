@@ -196,7 +196,7 @@ class IseedCommand extends Command
      * Generate file name, to be used in test wether seed file already exist
      *
      * @param  string $table
-     * @return string
+     * @return array
      */
     protected function generateFileName($table, $prefix=null, $suffix=null)
     {
