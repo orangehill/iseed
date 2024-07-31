@@ -20,7 +20,7 @@ composer require orangehill/iseed:1.1 # Laravel 4
 
 ### 2. Add Service Provider (Laravel 5.4 and below)
 
-Latest Laravel versions have auto dicovery and automatically add service provider - if you're using 5.4.x and below, remember to add it to `providers` array at `/app/config/app.php`:
+Latest Laravel versions have auto discovery and automatically add service provider - if you're using 5.4.x and below, remember to add it to `providers` array at `/app/config/app.php`:
 
 ```php
 // ...
@@ -125,7 +125,7 @@ artisan iseed users --max=10 --orderby=id
 ```
 
 ### direction
-Optional parameter which allows you to set the direction of the ordering of results; used in conjuction with orderby parameter.
+Optional parameter which allows you to set the direction of the ordering of results; used in conjunction with orderby parameter.
 
 Example:
 ```
