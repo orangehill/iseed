@@ -61,7 +61,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $addSequence = false, $orderBy = null, $direction = 'ASC')
     {
         if (!$database) {
             $database = config('database.default');
@@ -86,6 +86,10 @@ class Iseed
         // Get template for a seed file contents
         $stub = $this->readStubFile($this->getStubPath() . '/seed.stub');
 
+        $stub = str_replace(
+            '{{add_sequence}}', $addSequence ? $this->getSequenceStatement($table) : '', $stub
+        );
+
         // Get a seed folder path
         $seedPath = $this->getSeedPath();
 
@@ -101,7 +105,8 @@ class Iseed
             $chunkSize,
             $prerunEvent,
             $postrunEvent,
-            $indexed
+            $indexed,
+            $addSequence
         );
 
         // Save a populated stub
@@ -114,6 +119,12 @@ class Iseed
 
         // Update the DatabaseSeeder.php file
         return $this->updateDatabaseSeederRunMethod($className) !== false;
+    }
+
+    public function getSequenceStatement($table)
+    {
+        return "\$maxId = \\DB::table('{$table}')->max('id') ?? 0;
+                \\DB::select(\"SELECT setval('{$table}_id_seq', ?, false)\", [\$maxId + 1]);";
     }
 
     /**
@@ -220,7 +231,7 @@ class Iseed
      * @param  string   $postunEvent
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $addSequence = false)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
 
@@ -259,6 +270,8 @@ class Iseed
         if (!is_null($table)) {
             $stub = str_replace('{{table}}', $table, $stub);
         }
+
+        $stub = str_replace('{{add_sequence}}', $addSequence ? $this->getSequenceStatement($table) : '', $stub);
 
         $postrunEventInsert = '';
         if ($postrunEvent) {

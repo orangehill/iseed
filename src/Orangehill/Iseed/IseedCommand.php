@@ -66,6 +66,7 @@ class IseedCommand extends Command
         $direction = $this->option('direction');
         $prefix = $this->option('classnameprefix');
         $suffix = $this->option('classnamesuffix');
+        $addSequence = $this->option('addsequence');
 
         if ($max < 1) {
             $max = null;
@@ -106,6 +107,7 @@ class IseedCommand extends Command
                         $postrunEvent,
                         $dumpAuto,
                         $indexed,
+                        $addSequence,
                         $orderBy,
                         $direction
                     ),
@@ -128,7 +130,8 @@ class IseedCommand extends Command
                         $prerunEvent,
                         $postrunEvent,
                         $dumpAuto,
-                        $indexed
+                        $indexed,
+                        $addSequence
                     ),
                     $table
                 );
@@ -172,6 +175,7 @@ class IseedCommand extends Command
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
+            array('addsequence', null, InputOption::VALUE_NONE, 'Add sequence to seed file', null),
         );
     }
 

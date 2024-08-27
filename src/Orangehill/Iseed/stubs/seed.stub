@@ -20,5 +20,8 @@ class {{class}} extends Seeder
         {{insert_statements}}
         
         {{postrun_event}}
+
+		{{add_sequence}}
+
     }
 }
