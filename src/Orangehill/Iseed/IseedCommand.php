@@ -66,6 +66,8 @@ class IseedCommand extends Command
         $direction = $this->option('direction');
         $prefix = $this->option('classnameprefix');
         $suffix = $this->option('classnamesuffix');
+        $folder = $this->option('folder');
+
 
         if ($max < 1) {
             $max = null;
@@ -89,13 +91,14 @@ class IseedCommand extends Command
             $tableIncrement++;
 
             // generate file and class name based on name of the table
-            list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
+            list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix, $folder);
 
             // if file does not exist or force option is turned on generate seeder
             if (!\File::exists($fileName) || $this->option('force')) {
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
+                        $folder,
                         $prefix,
                         $suffix,
                         $this->option('database'),
@@ -119,6 +122,7 @@ class IseedCommand extends Command
                 $this->printResult(
                     app('iseed')->generateSeed(
                         $table,
+                        $folder,
                         $prefix,
                         $suffix,
                         $this->option('database'),
@@ -172,6 +176,7 @@ class IseedCommand extends Command
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
+            array('folder', null, InputOption::VALUE_OPTIONAL, 'folder where the seed is', null),
         );
     }
 
@@ -198,7 +203,7 @@ class IseedCommand extends Command
      * @param  string $table
      * @return string
      */
-    protected function generateFileName($table, $prefix=null, $suffix=null)
+    protected function generateFileName($table, $prefix=null, $suffix=null, $folder=null)
     {
         if (!\Schema::connection($this->option('database') ? $this->option('database') : config('database.default'))->hasTable($table)) {
             throw new TableNotFoundException("Table $table was not found.");
@@ -206,7 +211,11 @@ class IseedCommand extends Command
 
         // Generate class name and file name
         $className = app('iseed')->generateClassName($table, $prefix, $suffix);
-        $seedPath = base_path() . config('iseed::config.path');
+        if(isset($folder)){
+            $seedPath = base_path() . "/database/".$folder;
+        }else{
+            $seedPath = base_path() . config('iseed::config.path');
+        }
         return [$seedPath . '/' . $className . '.php', $className . '.php'];
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\{{namespace}};
 
 use Illuminate\Database\Seeder;
 
@@ -18,7 +18,7 @@ class {{class}} extends Seeder
 
         \DB::table('{{table}}')->delete();
         {{insert_statements}}
-        
+
         {{postrun_event}}
     }
 }

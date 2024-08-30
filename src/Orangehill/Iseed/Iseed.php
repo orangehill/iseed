@@ -52,6 +52,7 @@ class Iseed
     /**
      * Generates a seed file.
      * @param  string   $table
+     * @param  string   $folder
      * @param  string   $prefix
      * @param  string   $suffix
      * @param  string   $database
@@ -61,7 +62,7 @@ class Iseed
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $folder=null, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
     {
         if (!$database) {
             $database = config('database.default');
@@ -87,9 +88,13 @@ class Iseed
         $stub = $this->readStubFile($this->getStubPath() . '/seed.stub');
 
         // Get a seed folder path
-        $seedPath = $this->getSeedPath();
+        if (isset($folder)) {
+            $seedPath = base_path() ."/database/".$folder;
+        }else{
+            $seedPath = $this->getSeedPath();
+        }
 
-        // Get a app/database/seeds path
+        // Get a app/database/seeders path
         $seedsPath = $this->getPath($className, $seedPath);
 
         // Get a populated stub file
@@ -98,6 +103,7 @@ class Iseed
             $stub,
             $table,
             $dataArray,
+            $folder,
             $chunkSize,
             $prerunEvent,
             $postrunEvent,
@@ -113,7 +119,7 @@ class Iseed
         }
 
         // Update the DatabaseSeeder.php file
-        return $this->updateDatabaseSeederRunMethod($className) !== false;
+        return $this->updateDatabaseSeederRunMethod($className, $folder) !== false;
     }
 
     /**
@@ -220,9 +226,17 @@ class Iseed
      * @param  string   $postunEvent
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $table, $data, $folder = null, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
+
+        // Get a seed folder path
+        if (isset($folder)) {
+            $seedNamespace = ucfirst($folder);
+        }else{
+            $seedNamespace = config('iseed::config.namespace');
+        }
+        $stub = str_replace('{{namespace}}', $seedNamespace, $stub);
 
         $inserts = '';
         $chunks = array_chunk($data, $chunkSize);
@@ -395,9 +409,13 @@ class Iseed
      * @param  string  $className
      * @return bool
      */
-    public function updateDatabaseSeederRunMethod($className)
+    public function updateDatabaseSeederRunMethod($className, $folder = null)
     {
-        $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+        if(isset($folder)){
+            $databaseSeederPath = base_path() . "/database/".$folder . '/DatabaseSeeder.php';
+        }else{
+            $databaseSeederPath = base_path() . config('iseed::config.path') . '/DatabaseSeeder.php';
+        }
 
         $content = $this->files->get($databaseSeederPath);
         if (strpos($content, "\$this->call({$className}::class)") === false) {
