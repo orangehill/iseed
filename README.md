@@ -185,6 +185,14 @@ Example:
 ```
 php artisan iseed users --noindex
 ```
+### WHERE
+- `--where` : (Optional) Specify a SQL `WHERE` clause to filter the rows to be included in the seed file. The `WHERE` clause should be provided as a string and will be applied directly to the SQL query. Example: `--where="email LIKE '%@example.com'"`.
+
+Example:
+```
+php artisan iseed users --where="email LIKE '%@example.com'"
+```
+
 
 ## Usage
 

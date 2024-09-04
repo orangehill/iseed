@@ -66,6 +66,7 @@ class IseedCommand extends Command
         $direction = $this->option('direction');
         $prefix = $this->option('classnameprefix');
         $suffix = $this->option('classnamesuffix');
+        
 
         if ($max < 1) {
             $max = null;
@@ -172,6 +173,7 @@ class IseedCommand extends Command
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
+            array('where', null, InputOption::VALUE_OPTIONAL, 'SQL WHERE clause for seeding', null),
         );
     }
 
