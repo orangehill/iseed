@@ -47,96 +47,96 @@ class IseedCommand extends Command
      *
      * @return void
      */
-    public function fire()
-    {
-        // if clean option is checked empty iSeed template in DatabaseSeeder.php
-        if ($this->option('clean')) {
-            app('iseed')->cleanSection();
-        }
-
-        $tables = explode(",", $this->argument('tables'));
-        $max = intval($this->option('max'));
-        $chunkSize = intval($this->option('chunksize'));
-        $exclude = explode(",", $this->option('exclude'));
-        $prerunEvents = explode(",", $this->option('prerun'));
-        $postrunEvents = explode(",", $this->option('postrun'));
-        $dumpAuto = intval($this->option('dumpauto'));
-        $indexed = !$this->option('noindex');
-        $orderBy = $this->option('orderby');
-        $direction = $this->option('direction');
-        $prefix = $this->option('classnameprefix');
-        $suffix = $this->option('classnamesuffix');
-
-        if ($max < 1) {
-            $max = null;
-        }
-
-        if ($chunkSize < 1) {
-            $chunkSize = null;
-        }
-
-        $tableIncrement = 0;
-        foreach ($tables as $table) {
-            $table = trim($table);
-            $prerunEvent = null;
-            if (isset($prerunEvents[$tableIncrement])) {
-                $prerunEvent = trim($prerunEvents[$tableIncrement]);
-            }
-            $postrunEvent = null;
-            if (isset($postrunEvents[$tableIncrement])) {
-                $postrunEvent = trim($postrunEvents[$tableIncrement]);
-            }
-            $tableIncrement++;
-
-            // generate file and class name based on name of the table
-            list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
-
-            // if file does not exist or force option is turned on generate seeder
-            if (!\File::exists($fileName) || $this->option('force')) {
-                $this->printResult(
-                    app('iseed')->generateSeed(
-                        $table,
-                        $prefix,
-                        $suffix,
-                        $this->option('database'),
-                        $max,
-                        $chunkSize,
-                        $exclude,
-                        $prerunEvent,
-                        $postrunEvent,
-                        $dumpAuto,
-                        $indexed,
-                        $orderBy,
-                        $direction
-                    ),
-                    $table
-                );
-                continue;
-            }
-
-            if ($this->confirm('File ' . $className . ' already exist. Do you wish to override it? [yes|no]')) {
-                // if user said yes overwrite old seeder
-                $this->printResult(
-                    app('iseed')->generateSeed(
-                        $table,
-                        $prefix,
-                        $suffix,
-                        $this->option('database'),
-                        $max,
-                        $chunkSize,
-                        $exclude,
-                        $prerunEvent,
-                        $postrunEvent,
-                        $dumpAuto,
-                        $indexed
-                    ),
-                    $table
-                );
-            }
-        }
-
-        return;
-    }
+    
+     public function fire()
+     {
+         // Retrieve the tables argument. Since we want to allow a default of "all tables",
+         // make sure the tables argument is optional in getArguments() (see below).
+         $tablesArg = $this->argument('tables');
+     
+         if (empty($tablesArg)) {
+             // Get all table names from the database
+             $tables = app('iseed')->getAllTableNames();
+         } else {
+             // Otherwise, split the provided comma-separated table names
+             $tables = explode(',', $tablesArg);
+         }
+     
+         // Convert other options as needed
+         $max = intval($this->option('max'));
+         $chunkSize = intval($this->option('chunksize'));
+         $exclude = explode(",", $this->option('exclude'));
+         $prerunEvents = explode(",", $this->option('prerun'));
+         $postrunEvents = explode(",", $this->option('postrun'));
+         $dumpAuto = intval($this->option('dumpauto'));
+         $indexed = !$this->option('noindex');
+         $orderBy = $this->option('orderby');
+         $direction = $this->option('direction');
+         $prefix = $this->option('classnameprefix');
+         $suffix = $this->option('classnamesuffix');
+     
+         if ($max < 1) {
+             $max = null;
+         }
+         if ($chunkSize < 1) {
+             $chunkSize = null;
+         }
+     
+         $tableIncrement = 0;
+         foreach ($tables as $table) {
+             $table = trim($table);
+             $prerunEvent = isset($prerunEvents[$tableIncrement]) ? trim($prerunEvents[$tableIncrement]) : null;
+             $postrunEvent = isset($postrunEvents[$tableIncrement]) ? trim($postrunEvents[$tableIncrement]) : null;
+             $tableIncrement++;
+     
+             // generate file and class name based on name of the table
+             list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
+     
+             // if file does not exist or force option is turned on, generate seeder
+             if (!\File::exists($fileName) || $this->option('force')) {
+                 $this->printResult(
+                     app('iseed')->generateSeed(
+                         $table,
+                         $prefix,
+                         $suffix,
+                         $this->option('database'),
+                         $max,
+                         $chunkSize,
+                         $exclude,
+                         $prerunEvent,
+                         $postrunEvent,
+                         $dumpAuto,
+                         $indexed,
+                         $orderBy,
+                         $direction
+                     ),
+                     $table
+                 );
+                 continue;
+             }
+     
+             if ($this->confirm('File ' . $className . ' already exists. Do you wish to override it? [yes|no]')) {
+                 // Overwrite old seeder if confirmed
+                 $this->printResult(
+                     app('iseed')->generateSeed(
+                         $table,
+                         $prefix,
+                         $suffix,
+                         $this->option('database'),
+                         $max,
+                         $chunkSize,
+                         $exclude,
+                         $prerunEvent,
+                         $postrunEvent,
+                         $dumpAuto,
+                         $indexed
+                     ),
+                     $table
+                 );
+             }
+         }
+     }
+     
 
     /**
      * Get the console command arguments.
@@ -146,7 +146,7 @@ class IseedCommand extends Command
     protected function getArguments()
     {
         return array(
-            array('tables', InputArgument::REQUIRED, 'comma separated string of table names'),
+            array('tables', InputArgument::OPTIONAL, 'comma separated string of table names'),
         );
     }
 
