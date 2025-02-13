@@ -197,6 +197,23 @@ Example:
 php artisan iseed users --noindex
 ```
 
+### where
+Optional parameter which allows you to specify a SQL WHERE clause to filter the rows that will be included in the seed file. The WHERE clause should be provided as a string and will be applied directly to the SQL query.
+
+Examples:
+```sh
+# Only seed users with example.com emails
+php artisan iseed users --where="email LIKE '%@example.com'"
+
+# Seed active users created after a specific date
+php artisan iseed users --where="active = 1 AND created_at > '2024-01-01'"
+
+# Combine with other options
+php artisan iseed users --where="role = 'admin'" --max=10 --orderby=created_at --direction=desc
+```
+
+**Note**: When using complex WHERE clauses with special characters or spaces, make sure to properly escape and quote the condition string according to your shell's requirements.
+
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments.

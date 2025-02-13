@@ -74,6 +74,7 @@ class IseedCommand extends Command
          $direction = $this->option('direction');
          $prefix = $this->option('classnameprefix');
          $suffix = $this->option('classnamesuffix');
+         $whereClause = $this->option('where');
      
          if ($max < 1) {
              $max = null;
@@ -108,7 +109,8 @@ class IseedCommand extends Command
                          $dumpAuto,
                          $indexed,
                          $orderBy,
-                         $direction
+                         $direction,
+                         $whereClause
                      ),
                      $table
                  );
@@ -129,7 +131,10 @@ class IseedCommand extends Command
                          $prerunEvent,
                          $postrunEvent,
                          $dumpAuto,
-                         $indexed
+                         $indexed,
+                         $orderBy,
+                         $direction,
+                         $whereClause
                      ),
                      $table
                  );
@@ -172,6 +177,7 @@ class IseedCommand extends Command
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
+            array('where', null, InputOption::VALUE_OPTIONAL, 'where clause to filter records', null),
         );
     }
 
