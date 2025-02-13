@@ -214,6 +214,17 @@ php artisan iseed users --where="role = 'admin'" --max=10 --orderby=created_at -
 
 **Note**: When using complex WHERE clauses with special characters or spaces, make sure to properly escape and quote the condition string according to your shell's requirements.
 
+### stubsdir
+Optional parameter which allows specifying the stubs directory, instead of the default one.
+The following stubs will be picked up from that directory:
+
+- `seed.stub`: Outlines a generated seeder.
+
+Example:
+```
+php artisan iseed users --stubsdir=stubs/iseed
+```
+
 ## Usage
 
 To generate a seed file for your users table simply call: `\Iseed::generateSeed('users', 'connectionName', 'numOfRows');`. `connectionName` and `numOfRows` are not required arguments.
