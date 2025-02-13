@@ -30,15 +30,26 @@ Orangehill\Iseed\IseedServiceProvider::class,
 ## Artisan command options
 
 ### [table_name]
-Mandatory parameter which defines which table/s will be used for seed creation.
-Use CSV notation for multiple tables. Seed file will be generated for each table.
+Optional. This parameter defines which table(s) will be used for seed creation.
 
-Examples:
+If provided:
+Use CSV notation to list one or more table names. A seed file will be generated for each specified table.
+
+Examples Generate a seed file for a single table:
 ```
 php artisan iseed my_table
 ```
+Example Generate seed files for multiple tables:
+
 ```
 php artisan iseed my_table,another_table
+```
+
+If omitted:
+The command automatically retrieves all table names from your database and generates seeders for every table.
+Examples:
+```
+php artisan iseed
 ```
 
 ### classnameprefix & classnamesuffix

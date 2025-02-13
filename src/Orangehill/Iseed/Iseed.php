@@ -414,4 +414,11 @@ class Iseed
 
         return $this->files->put($databaseSeederPath, $content) !== false;
     }
+
+    public function getAllTableNames()
+    {
+        // Depending on your Laravel version, you may use the Doctrine schema manager:
+        $schema = \DB::connection($this->databaseName)->getDoctrineSchemaManager();
+        return $schema->listTableNames();
+    }
 }
