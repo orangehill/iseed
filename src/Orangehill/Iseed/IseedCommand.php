@@ -47,13 +47,15 @@ class IseedCommand extends Command
      *
      * @return void
      */
-    
+
      public function fire()
      {
+         $iseed = app('iseed');
+
          // Retrieve the tables argument. Since we want to allow a default of "all tables",
          // make sure the tables argument is optional in getArguments() (see below).
          $tablesArg = $this->argument('tables');
-     
+
          if (empty($tablesArg)) {
              // Get all table names from the database
              $tables = app('iseed')->getAllTableNames();
@@ -61,7 +63,7 @@ class IseedCommand extends Command
              // Otherwise, split the provided comma-separated table names
              $tables = explode(',', $tablesArg);
          }
-     
+
          // Convert other options as needed
          $max = intval($this->option('max'));
          $chunkSize = intval($this->option('chunksize'));
@@ -75,28 +77,31 @@ class IseedCommand extends Command
          $prefix = $this->option('classnameprefix');
          $suffix = $this->option('classnamesuffix');
          $whereClause = $this->option('where');
-     
+         $stubsDir = $this->option('stubsdir');
+
+         $iseed->setStubPath($stubsDir);
+
          if ($max < 1) {
              $max = null;
          }
          if ($chunkSize < 1) {
              $chunkSize = null;
          }
-     
+
          $tableIncrement = 0;
          foreach ($tables as $table) {
              $table = trim($table);
              $prerunEvent = isset($prerunEvents[$tableIncrement]) ? trim($prerunEvents[$tableIncrement]) : null;
              $postrunEvent = isset($postrunEvents[$tableIncrement]) ? trim($postrunEvents[$tableIncrement]) : null;
              $tableIncrement++;
-     
+
              // generate file and class name based on name of the table
              list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
-     
+
              // if file does not exist or force option is turned on, generate seeder
              if (!\File::exists($fileName) || $this->option('force')) {
                  $this->printResult(
-                     app('iseed')->generateSeed(
+                     $iseed->generateSeed(
                          $table,
                          $prefix,
                          $suffix,
@@ -116,11 +121,11 @@ class IseedCommand extends Command
                  );
                  continue;
              }
-     
+
              if ($this->confirm('File ' . $className . ' already exists. Do you wish to override it? [yes|no]')) {
                  // Overwrite old seeder if confirmed
                  $this->printResult(
-                     app('iseed')->generateSeed(
+                     $iseed->generateSeed(
                          $table,
                          $prefix,
                          $suffix,
@@ -141,7 +146,7 @@ class IseedCommand extends Command
              }
          }
      }
-     
+
 
     /**
      * Get the console command arguments.
@@ -178,6 +183,7 @@ class IseedCommand extends Command
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
             array('where', null, InputOption::VALUE_OPTIONAL, 'where clause to filter records', null),
+            array('stubsdir', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', __DIR__ . DIRECTORY_SEPARATOR . 'stubs'),
         );
     }
 
