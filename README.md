@@ -212,7 +212,19 @@ php artisan iseed users --where="active = 1 AND created_at > '2024-01-01'"
 php artisan iseed users --where="role = 'admin'" --max=10 --orderby=created_at --direction=desc
 ```
 
-**Note**: When using complex WHERE clauses with special characters or spaces, make sure to properly escape and quote the condition string according to your shell's requirements.
+**Note**: When using complex WHERE clauses with special characters or spaces, make sure to properly escape and quote the
+condition string according to your shell's requirements.
+
+### stubsdir
+Optional parameter which allows specifying the stubs directory, instead of the default one.
+The following stubs will be picked up from that directory:
+
+- `seed.stub`: Outlines a generated seeder.
+
+Example:
+```
+php artisan iseed users --stubsdir=stubs/iseed
+```
 
 ## Usage
 
