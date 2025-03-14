@@ -33,6 +33,11 @@ class Iseed
     private $indentCharacter = "    ";
 
     /**
+     * @var Filesystem
+     */
+    private $files;
+
+    /**
      * @var Composer
      */
     private $composer;
