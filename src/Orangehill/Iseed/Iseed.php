@@ -5,6 +5,8 @@ namespace Orangehill\Iseed;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
 use Illuminate\Support\Facades\Config;
+use Doctrine\DBAL\DriverManager;
+use Illuminate\Support\Facades\DB;
 
 class Iseed
 {
