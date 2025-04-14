@@ -425,8 +425,34 @@ class Iseed
 
     public function getAllTableNames()
     {
-        // Depending on your Laravel version, you may use the Doctrine schema manager:
-        $schema = \DB::connection($this->databaseName)->getDoctrineSchemaManager();
-        return $schema->listTableNames();
+        // Use the provided database name, or fallback to Laravel's default connection
+        $connectionName = $this->databaseName ?? config('database.default');
+    
+        // Get the Laravel database connection object
+        $connection = DB::connection($connectionName);
+    
+        // Get the underlying PDO instance for the Doctrine connection
+        $pdo = $connection->getPdo();
+    
+        // Retrieve the database configuration for the selected connection
+        $config = config("database.connections.{$connectionName}");
+    
+        // Prepare connection parameters for Doctrine DBAL
+        $connectionParams = [
+            'pdo' => $pdo, // Use the active PDO connection from Laravel
+            'dbname' => $config['database'], // Database name from config
+            'user' => $config['username'], // DB username from config
+            'password' => $config['password'], // DB password from config
+            'driver' => 'pdo_mysql', // Specify MySQL driver for DBAL
+        ];
+    
+        // Create a Doctrine DBAL connection using the provided params
+        $doctrineConn = DriverManager::getConnection($connectionParams);
+    
+        // Get the Doctrine schema manager for retrieving schema details
+        $schemaManager = $doctrineConn->createSchemaManager();
+    
+        // Return the list of all table names in the database
+        return $schemaManager->listTableNames();
     }
 }
