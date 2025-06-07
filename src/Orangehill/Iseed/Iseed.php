@@ -442,7 +442,11 @@ class Iseed
         if ($version >= 11) {
             $builder = Schema::connection($this->databaseName)->getTables();
 
-            return collect($builder)->map->name->toArray();
+            return collect($builder)
+                ->where('schema', \DB::connection($this->databaseName)->getDatabaseName())
+                ->map
+                ->name
+                ->toArray();
         }
 
         $schema = \DB::connection($this->databaseName)->getDoctrineSchemaManager();
