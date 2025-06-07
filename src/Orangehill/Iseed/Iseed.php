@@ -5,6 +5,7 @@ namespace Orangehill\Iseed;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 
 class Iseed
 {
@@ -423,10 +424,34 @@ class Iseed
         return $this->files->put($databaseSeederPath, $content) !== false;
     }
 
-    public function getAllTableNames()
+    /**
+     * Get all table names
+     *
+     * @return array {string}
+     */
+    public function getAllTableNames(?string $databaseName = null): array
     {
-        // Depending on your Laravel version, you may use the Doctrine schema manager:
+        $this->setDatabaseName($databaseName);
+
+        /* NOTE: see: https://github.com/laravel/framework/pull/48864
+        * Depending on your Laravel version, you may use the Doctrine schema manager
+        */
+
+        $version = (int) substr(app()->version(), 0, 2);
+
+        if ($version >= 11) {
+            $builder = Schema::connection($this->databaseName)->getTables();
+
+            return collect($builder)->map->name;
+        }
+
         $schema = \DB::connection($this->databaseName)->getDoctrineSchemaManager();
+
         return $schema->listTableNames();
+    }
+
+    private function setDatabaseName(?string $databaseName)
+    {
+        $this->databaseName = $databaseName ?? config('database.default');
     }
 }

@@ -47,21 +47,21 @@ class IseedCommand extends Command
      *
      * @return void
      */
-    
+
      public function fire()
      {
          // Retrieve the tables argument. Since we want to allow a default of "all tables",
          // make sure the tables argument is optional in getArguments() (see below).
          $tablesArg = $this->argument('tables');
-     
+
          if (empty($tablesArg)) {
              // Get all table names from the database
-             $tables = app('iseed')->getAllTableNames();
+             $tables = app('iseed')->getAllTableNames($this->option('database'));
          } else {
              // Otherwise, split the provided comma-separated table names
              $tables = explode(',', $tablesArg);
          }
-     
+
          // Convert other options as needed
          $max = intval($this->option('max'));
          $chunkSize = intval($this->option('chunksize'));
@@ -75,24 +75,24 @@ class IseedCommand extends Command
          $prefix = $this->option('classnameprefix');
          $suffix = $this->option('classnamesuffix');
          $whereClause = $this->option('where');
-     
+
          if ($max < 1) {
              $max = null;
          }
          if ($chunkSize < 1) {
              $chunkSize = null;
          }
-     
+
          $tableIncrement = 0;
          foreach ($tables as $table) {
              $table = trim($table);
              $prerunEvent = isset($prerunEvents[$tableIncrement]) ? trim($prerunEvents[$tableIncrement]) : null;
              $postrunEvent = isset($postrunEvents[$tableIncrement]) ? trim($postrunEvents[$tableIncrement]) : null;
              $tableIncrement++;
-     
+
              // generate file and class name based on name of the table
              list($fileName, $className) = $this->generateFileName($table, $prefix, $suffix);
-     
+
              // if file does not exist or force option is turned on, generate seeder
              if (!\File::exists($fileName) || $this->option('force')) {
                  $this->printResult(
@@ -116,7 +116,7 @@ class IseedCommand extends Command
                  );
                  continue;
              }
-     
+
              if ($this->confirm('File ' . $className . ' already exists. Do you wish to override it? [yes|no]')) {
                  // Overwrite old seeder if confirmed
                  $this->printResult(
@@ -141,7 +141,7 @@ class IseedCommand extends Command
              }
          }
      }
-     
+
 
     /**
      * Get the console command arguments.
