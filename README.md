@@ -295,7 +295,7 @@ class DatabaseSeeder extends Seeder {
     {
         Eloquent::unguard();
 
-        if(App::environment() == "local")
+        if(!App::isProduction())
         {
             throw new \Exception('Only run this from production');
         }
