@@ -205,6 +205,16 @@ Example:
 php artisan iseed users --noregister
 ```
 
+### skip-fk-checks
+By using --skip-fk-checks the generated seeder will include statements to disable foreign key checks before deleting/inserting and re-enable them afterwards. This is useful when seeding tables that have foreign key constraints, as it prevents "foreign key constraint failed" errors.
+
+Example:
+```
+php artisan iseed users --skip-fk-checks
+```
+
+**Note**: This option generates MySQL-specific `SET FOREIGN_KEY_CHECKS` statements.
+
 ### where
 Optional parameter which allows you to specify a SQL WHERE clause to filter the rows that will be included in the seed file. The WHERE clause should be provided as a string and will be applied directly to the SQL query.
 

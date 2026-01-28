@@ -71,6 +71,7 @@ class IseedCommand extends Command
          $dumpAuto = intval($this->option('dumpauto'));
          $indexed = !$this->option('noindex');
          $register = !$this->option('noregister');
+         $skipFkChecks = $this->option('skip-fk-checks');
          $orderBy = $this->option('orderby');
          $direction = $this->option('direction');
          $prefix = $this->option('classnameprefix');
@@ -112,7 +113,8 @@ class IseedCommand extends Command
                          $orderBy,
                          $direction,
                          $whereClause,
-                        $register
+                        $register,
+                        $skipFkChecks
                      ),
                      $table
                  );
@@ -137,7 +139,8 @@ class IseedCommand extends Command
                          $orderBy,
                          $direction,
                          $whereClause,
-                        $register
+                        $register,
+                        $skipFkChecks
                      ),
                      $table
                  );
@@ -182,6 +185,7 @@ class IseedCommand extends Command
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
             array('where', null, InputOption::VALUE_OPTIONAL, 'where clause to filter records', null),
+            array('skip-fk-checks', null, InputOption::VALUE_NONE, 'disable foreign key checks during seeding', null),
         );
     }
 

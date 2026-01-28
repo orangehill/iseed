@@ -65,10 +65,11 @@ class Iseed
      * @param  string   $prerunEvent
      * @param  string   $postrunEvent
      * @param  bool     $register
+     * @param  bool     $skipFkChecks
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null, $register = true)
+    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null, $register = true, $skipFkChecks = false)
     {
         if (!$database) {
             $database = config('database.default');
@@ -109,7 +110,8 @@ class Iseed
             $prerunEvent,
             $postrunEvent,
             $indexed,
-            $database
+            $database,
+            $skipFkChecks
         );
 
         // Save a populated stub
@@ -243,9 +245,10 @@ class Iseed
      * @param  string   $postrunEvent
      * @param  bool     $indexed
      * @param  string   $database
+     * @param  bool     $skipFkChecks
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $database = null)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $database = null, $skipFkChecks = false)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
 
@@ -335,6 +338,22 @@ class Iseed
         );
 
         $stub = str_replace('{{insert_statements}}', $inserts, $stub);
+
+        // Add foreign key check disable/enable if requested
+        if ($skipFkChecks) {
+            // Find the delete statement and wrap everything with FK disable/enable
+            $stub = preg_replace(
+                '/(\\\\DB::.*->delete\(\);)/',
+                "\\DB::statement('SET FOREIGN_KEY_CHECKS=0;');\n\n        $1",
+                $stub
+            );
+            // Add enable statement after the last insert
+            $stub = preg_replace(
+                '/(->insert\([^;]+\);)(?!.*->insert\()/',
+                "$1\n\n        \\DB::statement('SET FOREIGN_KEY_CHECKS=1;');",
+                $stub
+            );
+        }
 
         return $stub;
     }
