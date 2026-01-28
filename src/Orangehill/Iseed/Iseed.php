@@ -67,10 +67,11 @@ class Iseed
      * @param  bool     $register
      * @param  bool     $skipFkChecks
      * @param  int      $skip
+     * @param  bool     $resetSequences
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null, $register = true, $skipFkChecks = false, $skip = null)
+    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null, $register = true, $skipFkChecks = false, $skip = null, $resetSequences = false)
     {
         if (!$database) {
             $database = config('database.default');
@@ -112,7 +113,8 @@ class Iseed
             $postrunEvent,
             $indexed,
             $database,
-            $skipFkChecks
+            $skipFkChecks,
+            $resetSequences
         );
 
         // Save a populated stub
@@ -251,9 +253,10 @@ class Iseed
      * @param  bool     $indexed
      * @param  string   $database
      * @param  bool     $skipFkChecks
+     * @param  bool     $resetSequences
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $database = null, $skipFkChecks = false)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $database = null, $skipFkChecks = false, $resetSequences = false)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
 
@@ -344,7 +347,7 @@ class Iseed
 
         $stub = str_replace('{{insert_statements}}', $inserts, $stub);
 
-        // Add foreign key check disable/enable if requested
+        // Add foreign key check disable/enable if requested (MySQL)
         if ($skipFkChecks) {
             // Find the delete statement and wrap everything with FK disable/enable
             $stub = preg_replace(
@@ -356,6 +359,22 @@ class Iseed
             $stub = preg_replace(
                 '/(->insert\([^;]+\);)(?!.*->insert\()/',
                 "$1\n\n        \\DB::statement('SET FOREIGN_KEY_CHECKS=1;');",
+                $stub
+            );
+        }
+
+        // Add PostgreSQL sequence reset if requested
+        if ($resetSequences) {
+            $connectionPrefix = $useConnection ? "\\DB::connection('{$database}')" : "\\DB";
+            $sequenceReset = "\n\n        // Reset PostgreSQL sequence to max id\n";
+            $sequenceReset .= "        if ({$connectionPrefix}->getDriverName() === 'pgsql') {\n";
+            $sequenceReset .= "            {$connectionPrefix}->statement(\"SELECT setval(pg_get_serial_sequence('{$table}', 'id'), COALESCE((SELECT MAX(id) FROM {$table}), 1))\");\n";
+            $sequenceReset .= "        }";
+
+            // Add after the last insert
+            $stub = preg_replace(
+                '/(->insert\([^;]+\);)(?!.*->insert\()/',
+                "$1" . $sequenceReset,
                 $stub
             );
         }
@@ -390,10 +409,13 @@ class Iseed
         $inString = false;
         $tabCount = 3;
         for ($i = 1; $i < count($lines); $i++) {
-            $lines[$i] = ltrim($lines[$i]);
+            // Only ltrim if we're not inside a multiline string (preserves whitespace in data)
+            if ($inString === false) {
+                $lines[$i] = ltrim($lines[$i]);
+            }
 
             //Check for closing bracket
-            if (strpos($lines[$i], ')') !== false) {
+            if (strpos($lines[$i], ')') !== false && $inString === false) {
                 $tabCount--;
             }
 
@@ -416,7 +438,7 @@ class Iseed
             }
 
             //check for opening bracket
-            if (strpos($lines[$i], '(') !== false) {
+            if (strpos($lines[$i], '(') !== false && $inString === false) {
                 $tabCount++;
             }
         }

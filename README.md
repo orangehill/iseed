@@ -215,6 +215,23 @@ php artisan iseed users --skip-fk-checks
 
 **Note**: This option generates MySQL-specific `SET FOREIGN_KEY_CHECKS` statements.
 
+### reset-sequences
+By using --reset-sequences the generated seeder will include statements to reset PostgreSQL sequences after seeding. This prevents "duplicate key value violates unique constraint" errors that can occur when inserting new records after seeding, because PostgreSQL sequences don't automatically reset when using DELETE.
+
+Example:
+```
+php artisan iseed users --reset-sequences
+```
+
+The generated seeder will include code to reset the sequence to the maximum ID value in the table:
+```php
+if (\DB::getDriverName() === 'pgsql') {
+    \DB::statement("SELECT setval(pg_get_serial_sequence('users', 'id'), COALESCE((SELECT MAX(id) FROM users), 1))");
+}
+```
+
+**Note**: This option generates PostgreSQL-specific statements and only executes when the database driver is PostgreSQL.
+
 ### skip
 Optional parameter which defines the number of rows to skip before exporting. This is useful for paginating through large tables in combination with the `--max` option.
 
