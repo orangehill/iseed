@@ -72,8 +72,9 @@ class IseedCommand extends Command
          $indexed = !$this->option('noindex');
          $register = !$this->option('noregister');
          $skipFkChecks = $this->option('skip-fk-checks');
+         $skip = intval($this->option('skip'));
          $orderBy = $this->option('orderby');
-         $direction = $this->option('direction');
+         $direction = $this->option('direction') ?: 'ASC';
          $prefix = $this->option('classnameprefix');
          $suffix = $this->option('classnamesuffix');
          $whereClause = $this->option('where');
@@ -83,6 +84,9 @@ class IseedCommand extends Command
          }
          if ($chunkSize < 1) {
              $chunkSize = null;
+         }
+         if ($skip < 1) {
+             $skip = null;
          }
 
          $tableIncrement = 0;
@@ -114,7 +118,8 @@ class IseedCommand extends Command
                          $direction,
                          $whereClause,
                         $register,
-                        $skipFkChecks
+                        $skipFkChecks,
+                        $skip
                      ),
                      $table
                  );
@@ -140,7 +145,8 @@ class IseedCommand extends Command
                          $direction,
                          $whereClause,
                         $register,
-                        $skipFkChecks
+                        $skipFkChecks,
+                        $skip
                      ),
                      $table
                  );
@@ -186,6 +192,7 @@ class IseedCommand extends Command
             array('classnamesuffix', null, InputOption::VALUE_OPTIONAL, 'suffix for class and file name', null),
             array('where', null, InputOption::VALUE_OPTIONAL, 'where clause to filter records', null),
             array('skip-fk-checks', null, InputOption::VALUE_NONE, 'disable foreign key checks during seeding', null),
+            array('skip', null, InputOption::VALUE_OPTIONAL, 'number of rows to skip', null),
         );
     }
 

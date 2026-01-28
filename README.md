@@ -215,6 +215,21 @@ php artisan iseed users --skip-fk-checks
 
 **Note**: This option generates MySQL-specific `SET FOREIGN_KEY_CHECKS` statements.
 
+### skip
+Optional parameter which defines the number of rows to skip before exporting. This is useful for paginating through large tables in combination with the `--max` option.
+
+Example:
+```
+php artisan iseed users --skip=1000
+```
+
+When combined with `--max` for pagination:
+```
+php artisan iseed users --max=1000 --orderby=id
+php artisan iseed users --max=1000 --skip=1000 --orderby=id
+php artisan iseed users --max=1000 --skip=2000 --orderby=id
+```
+
 ### where
 Optional parameter which allows you to specify a SQL WHERE clause to filter the rows that will be included in the seed file. The WHERE clause should be provided as a string and will be applied directly to the SQL query.
 

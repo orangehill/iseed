@@ -66,10 +66,11 @@ class Iseed
      * @param  string   $postrunEvent
      * @param  bool     $register
      * @param  bool     $skipFkChecks
+     * @param  int      $skip
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null, $register = true, $skipFkChecks = false)
+    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null, $register = true, $skipFkChecks = false, $skip = null)
     {
         if (!$database) {
             $database = config('database.default');
@@ -83,7 +84,7 @@ class Iseed
         }
 
         // Get the data
-        $data = $this->getData($table, $max, $exclude, $orderBy, $direction, $whereClause);
+        $data = $this->getData($table, $max, $exclude, $orderBy, $direction, $whereClause, $skip);
 
         // Repack the data
         $dataArray = $this->repackSeedData($data);
@@ -144,7 +145,7 @@ class Iseed
      * @param  string $table
      * @return Array
      */
-    public function getData($table, $max, $exclude = null, $orderBy = null, $direction = 'ASC', $whereClause = null)
+    public function getData($table, $max, $exclude = null, $orderBy = null, $direction = 'ASC', $whereClause = null, $skip = null)
     {
         $result = \DB::connection($this->databaseName)->table($table);
 
@@ -159,6 +160,10 @@ class Iseed
 
         if ($orderBy) {
             $result = $result->orderBy($orderBy, $direction);
+        }
+
+        if ($skip) {
+            $result = $result->skip($skip);
         }
 
         if ($max) {
