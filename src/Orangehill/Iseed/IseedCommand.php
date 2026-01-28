@@ -39,7 +39,7 @@ class IseedCommand extends Command
      */
     public function handle()
     {
-        return $this->fire();
+        $this->fire();
     }
 
     /**
