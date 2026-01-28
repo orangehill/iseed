@@ -4,3 +4,5 @@ composer.lock
 .DS_Store
 .idea
 .phpunit.*
+.claude/
+CLAUDE.md
