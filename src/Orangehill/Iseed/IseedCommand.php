@@ -199,7 +199,7 @@ class IseedCommand extends Command
     }
 
     /**
-     * Generate file name, to be used in test wether seed file already exist
+     * Generate file name, to be used in test whether seed file already exist
      *
      * @param  string $table
      * @return string

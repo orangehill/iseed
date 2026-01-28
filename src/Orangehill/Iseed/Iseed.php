@@ -349,7 +349,7 @@ class Iseed
                 }
             }
 
-            //check for openning bracket
+            //check for opening bracket
             if (strpos($lines[$i], '(') !== false) {
                 $tabCount++;
             }
