@@ -72,6 +72,7 @@ class IseedCommand extends Command
          $indexed = !$this->option('noindex');
          $register = !$this->option('noregister');
          $skipFkChecks = $this->option('skip-fk-checks');
+         $resetSequences = $this->option('reset-sequences');
          $skip = intval($this->option('skip'));
          $orderBy = $this->option('orderby');
          $direction = $this->option('direction') ?: 'ASC';
@@ -119,7 +120,8 @@ class IseedCommand extends Command
                          $whereClause,
                         $register,
                         $skipFkChecks,
-                        $skip
+                        $skip,
+                        $resetSequences
                      ),
                      $table
                  );
@@ -146,7 +148,8 @@ class IseedCommand extends Command
                          $whereClause,
                         $register,
                         $skipFkChecks,
-                        $skip
+                        $skip,
+                        $resetSequences
                      ),
                      $table
                  );
@@ -193,6 +196,7 @@ class IseedCommand extends Command
             array('where', null, InputOption::VALUE_OPTIONAL, 'where clause to filter records', null),
             array('skip-fk-checks', null, InputOption::VALUE_NONE, 'disable foreign key checks during seeding', null),
             array('skip', null, InputOption::VALUE_OPTIONAL, 'number of rows to skip', null),
+            array('reset-sequences', null, InputOption::VALUE_NONE, 'reset PostgreSQL sequences after seeding', null),
         );
     }
 
