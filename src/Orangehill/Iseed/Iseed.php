@@ -5,6 +5,7 @@ namespace Orangehill\Iseed;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 
 class Iseed
 {
@@ -33,6 +34,11 @@ class Iseed
     private $indentCharacter = "    ";
 
     /**
+     * @var Filesystem
+     */
+    private $files;
+
+    /**
      * @var Composer
      */
     private $composer;
@@ -57,11 +63,11 @@ class Iseed
      * @param  string   $database
      * @param  int      $max
      * @param  string   $prerunEvent
-     * @param  string   $postunEvent
+     * @param  string   $postrunEvent
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix=null, $suffix=null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC')
+    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null)
     {
         if (!$database) {
             $database = config('database.default');
@@ -75,7 +81,7 @@ class Iseed
         }
 
         // Get the data
-        $data = $this->getData($table, $max, $exclude, $orderBy, $direction);
+        $data = $this->getData($table, $max, $exclude, $orderBy, $direction, $whereClause);
 
         // Repack the data
         $dataArray = $this->repackSeedData($data);
@@ -130,7 +136,7 @@ class Iseed
      * @param  string $table
      * @return Array
      */
-    public function getData($table, $max, $exclude = null, $orderBy = null, $direction = 'ASC')
+    public function getData($table, $max, $exclude = null, $orderBy = null, $direction = 'ASC', $whereClause = null)
     {
         $result = \DB::connection($this->databaseName)->table($table);
 
@@ -139,7 +145,11 @@ class Iseed
             $result = $result->select(array_diff($allColumns, $exclude));
         }
 
-        if($orderBy) {
+        if ($whereClause) {
+            $result = $result->whereRaw($whereClause);
+        }
+
+        if ($orderBy) {
             $result = $result->orderBy($orderBy, $direction);
         }
 
@@ -190,7 +200,7 @@ class Iseed
      * @param  string  $suffix
      * @return string
      */
-    public function generateClassName($table, $prefix=null, $suffix=null)
+    public function generateClassName($table, $prefix = null, $suffix = null)
     {
         $tableString = '';
         $tableName = explode('_', $table);
@@ -217,7 +227,7 @@ class Iseed
      * @param  string   $data
      * @param  int      $chunkSize
      * @param  string   $prerunEvent
-     * @param  string   $postunEvent
+     * @param  string   $postrunEvent
      * @return string
      */
     public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
@@ -253,7 +263,9 @@ class Iseed
         }
 
         $stub = str_replace(
-            '{{prerun_event}}', $prerunEventInsert, $stub
+            '{{prerun_event}}',
+            $prerunEventInsert,
+            $stub
         );
 
         if (!is_null($table)) {
@@ -275,7 +287,9 @@ class Iseed
         }
 
         $stub = str_replace(
-            '{{postrun_event}}', $postrunEventInsert, $stub
+            '{{postrun_event}}',
+            $postrunEventInsert,
+            $stub
         );
 
         $stub = str_replace('{{insert_statements}}', $inserts, $stub);
@@ -335,7 +349,7 @@ class Iseed
                 }
             }
 
-            //check for openning bracket
+            //check for opening bracket
             if (strpos($lines[$i], '(') !== false) {
                 $tabCount++;
             }
@@ -413,5 +427,55 @@ class Iseed
         }
 
         return $this->files->put($databaseSeederPath, $content) !== false;
+    }
+
+    /**
+     * Get all table names
+     *
+     * @return array {string}
+     */
+    public function getAllTableNames(?string $databaseName = null): array
+    {
+        $this->setDatabaseName($databaseName);
+
+        /* NOTE: see: https://github.com/laravel/framework/pull/48864
+        * Depending on your Laravel version, you may use the Doctrine schema manager
+        */
+
+        $version = (int) substr(app()->version(), 0, 2);
+
+        if ($version >= 11) {
+            $connection = \DB::connection($this->databaseName);
+            $tables = Schema::connection($this->databaseName)->getTables();
+            $driver = $connection->getDriverName();
+
+            // Filter tables based on database driver
+            // MySQL/MariaDB: schema = database name, need to filter out other databases
+            // SQLite: schema = 'main', only one database per file
+            // PostgreSQL: schema = 'public' (default), filter by schema
+            $schemaFilter = match ($driver) {
+                'mysql', 'mariadb' => $connection->getDatabaseName(),
+                'pgsql' => 'public',
+                'sqlite' => 'main',
+                default => null,
+            };
+
+            $collection = collect($tables);
+
+            if ($schemaFilter !== null) {
+                $collection = $collection->where('schema', $schemaFilter);
+            }
+
+            return $collection->pluck('name')->values()->toArray();
+        }
+
+        $schema = \DB::connection($this->databaseName)->getDoctrineSchemaManager();
+
+        return $schema->listTableNames();
+    }
+
+    private function setDatabaseName(?string $databaseName)
+    {
+        $this->databaseName = $databaseName ?? config('database.default');
     }
 }

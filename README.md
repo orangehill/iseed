@@ -20,7 +20,7 @@ composer require orangehill/iseed:1.1 # Laravel 4
 
 ### 2. Add Service Provider (Laravel 5.4 and below)
 
-Latest Laravel versions have auto dicovery and automatically add service provider - if you're using 5.4.x and below, remember to add it to `providers` array at `/app/config/app.php`:
+Latest Laravel versions have auto discovery and automatically add service provider - if you're using 5.4.x and below, remember to add it to `providers` array at `/app/config/app.php`:
 
 ```php
 // ...
@@ -30,15 +30,26 @@ Orangehill\Iseed\IseedServiceProvider::class,
 ## Artisan command options
 
 ### [table_name]
-Mandatory parameter which defines which table/s will be used for seed creation.
-Use CSV notation for multiple tables. Seed file will be generated for each table.
+Optional. This parameter defines which table(s) will be used for seed creation.
 
-Examples:
+If provided:
+Use CSV notation to list one or more table names. A seed file will be generated for each specified table.
+
+Examples Generate a seed file for a single table:
 ```
 php artisan iseed my_table
 ```
+Example Generate seed files for multiple tables:
+
 ```
 php artisan iseed my_table,another_table
+```
+
+If omitted:
+The command automatically retrieves all table names from your database and generates seeders for every table.
+Examples:
+```
+php artisan iseed
 ```
 
 ### classnameprefix & classnamesuffix
@@ -125,7 +136,7 @@ artisan iseed users --max=10 --orderby=id
 ```
 
 ### direction
-Optional parameter which allows you to set the direction of the ordering of results; used in conjuction with orderby parameter.
+Optional parameter which allows you to set the direction of the ordering of results; used in conjunction with orderby parameter.
 
 Example:
 ```
@@ -185,6 +196,23 @@ Example:
 ```
 php artisan iseed users --noindex
 ```
+
+### where
+Optional parameter which allows you to specify a SQL WHERE clause to filter the rows that will be included in the seed file. The WHERE clause should be provided as a string and will be applied directly to the SQL query.
+
+Examples:
+```sh
+# Only seed users with example.com emails
+php artisan iseed users --where="email LIKE '%@example.com'"
+
+# Seed active users created after a specific date
+php artisan iseed users --where="active = 1 AND created_at > '2024-01-01'"
+
+# Combine with other options
+php artisan iseed users --where="role = 'admin'" --max=10 --orderby=created_at --direction=desc
+```
+
+**Note**: When using complex WHERE clauses with special characters or spaces, make sure to properly escape and quote the condition string according to your shell's requirements.
 
 ## Usage
 
@@ -294,6 +322,6 @@ To limit number of rows that will be exported from table use Artisan Command Opt
 
 To (re)seed the database go to the Terminal and run Laravel's `db:seed command` (`php artisan db:seed`).
 
-Please note that some users encountered a problem with large DB table exports ([error when seeding from table with many records](https://github.com/orangehill/iseed/issues/4)). The issue was solved by splitting input data into smaller chunks of elements per insert statement. As you may need to change the chunk size value in some extreme cases where DB table has a large number of columns, the chunk size is configurable in iSeed's `config.php` file:
+Please note that some users encountered a problem with large DB table exports ([error when seeding from table with many records](https://github.com/orangehill/iseed/issues/4)). The issue was solved by splitting input data into smaller chunks of elements per insert statement. As you may need to change the chunk size value in some extreme cases where DB table has a large number of rows, the chunk size is configurable in iSeed's `config.php` file:
 
 	'chunk_size' => 500 // Maximum number of rows per insert statement
