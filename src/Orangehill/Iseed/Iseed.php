@@ -221,7 +221,14 @@ class Iseed
      */
     public function getStubPath()
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . 'stubs';
+        $customPath = null;
+        try {
+            $customPath = config('iseed::config.stub_path');
+        } catch (\Exception $e) {
+            // Config not available (e.g., in tests)
+        }
+
+        return $customPath ?: __DIR__ . DIRECTORY_SEPARATOR . 'stubs';
     }
 
     /**

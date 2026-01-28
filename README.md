@@ -333,3 +333,21 @@ To (re)seed the database go to the Terminal and run Laravel's `db:seed command` 
 Please note that some users encountered a problem with large DB table exports ([error when seeding from table with many records](https://github.com/orangehill/iseed/issues/4)). The issue was solved by splitting input data into smaller chunks of elements per insert statement. As you may need to change the chunk size value in some extreme cases where DB table has a large number of rows, the chunk size is configurable in iSeed's `config.php` file:
 
 	'chunk_size' => 500 // Maximum number of rows per insert statement
+
+## Custom Stub Template
+
+You can customize the seed file template by creating a custom stub file and configuring iSeed to use it. Create a `config/iseed.php` file in your Laravel application:
+
+```php
+<?php
+return [
+    'stub_path' => resource_path('stubs'),
+];
+```
+
+Then create your custom stub at `resources/stubs/seed.stub`. The stub supports the following placeholders:
+- `{{class}}` - The seeder class name
+- `{{table}}` - The database table name
+- `{{insert_statements}}` - The generated insert statements
+- `{{prerun_event}}` - Pre-run event code (if specified)
+- `{{postrun_event}}` - Post-run event code (if specified)
