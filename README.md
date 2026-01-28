@@ -104,7 +104,7 @@ php artisan iseed users --clean
 ```
 
 ### database
-Optional parameter which specifies the DB connection name.
+Optional parameter which specifies the DB connection name. When using a non-default connection, the generated seeder will include the connection specification (e.g., `\DB::connection('mysql2')->table(...)`) to ensure the seeder targets the correct database.
 
 Example:
 ```

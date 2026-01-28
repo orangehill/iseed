@@ -108,7 +108,8 @@ class Iseed
             $chunkSize,
             $prerunEvent,
             $postrunEvent,
-            $indexed
+            $indexed,
+            $database
         );
 
         // Save a populated stub
@@ -240,22 +241,42 @@ class Iseed
      * @param  int      $chunkSize
      * @param  string   $prerunEvent
      * @param  string   $postrunEvent
+     * @param  bool     $indexed
+     * @param  string   $database
      * @return string
      */
-    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true)
+    public function populateStub($class, $stub, $table, $data, $chunkSize = null, $prerunEvent = null, $postrunEvent = null, $indexed = true, $database = null)
     {
         $chunkSize = $chunkSize ?: config('iseed::config.chunk_size');
+
+        // Determine if we need to specify connection (only for non-default databases)
+        $defaultDatabase = null;
+        try {
+            $defaultDatabase = config('database.default');
+        } catch (\Exception $e) {
+            // Config not available (e.g., in tests)
+        }
+        $useConnection = $database && $database !== $defaultDatabase;
 
         $inserts = '';
         $chunks = array_chunk($data, $chunkSize);
         foreach ($chunks as $chunk) {
             $this->addNewLines($inserts);
             $this->addIndent($inserts, 2);
-            $inserts .= sprintf(
-                "\DB::table('%s')->insert(%s);",
-                $table,
-                $this->prettifyArray($chunk, $indexed)
-            );
+            if ($useConnection) {
+                $inserts .= sprintf(
+                    "\\DB::connection('%s')->table('%s')->insert(%s);",
+                    $database,
+                    $table,
+                    $this->prettifyArray($chunk, $indexed)
+                );
+            } else {
+                $inserts .= sprintf(
+                    "\\DB::table('%s')->insert(%s);",
+                    $table,
+                    $this->prettifyArray($chunk, $indexed)
+                );
+            }
         }
 
         $stub = str_replace('{{class}}', $class, $stub);
@@ -281,7 +302,16 @@ class Iseed
         );
 
         if (!is_null($table)) {
-            $stub = str_replace('{{table}}', $table, $stub);
+            // Replace the DB::table statement (handles both default and non-default connections)
+            if ($useConnection) {
+                $stub = str_replace(
+                    "\\DB::table('{{table}}')",
+                    sprintf("\\DB::connection('%s')->table('%s')", $database, $table),
+                    $stub
+                );
+            } else {
+                $stub = str_replace('{{table}}', $table, $stub);
+            }
         }
 
         $postrunEventInsert = '';
