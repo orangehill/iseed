@@ -165,7 +165,7 @@ class IseedCommand extends Command
         return array(
             array('clean', null, InputOption::VALUE_NONE, 'clean iseed section', null),
             array('force', null, InputOption::VALUE_NONE, 'force overwrite of all existing seed classes', null),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', \Config::get('database.default')),
+            array('database', null, InputOption::VALUE_OPTIONAL, 'database connection', config('database.default')),
             array('max', null, InputOption::VALUE_OPTIONAL, 'max number of rows', null),
             array('chunksize', null, InputOption::VALUE_OPTIONAL, 'size of data chunks for each insert query', null),
             array('exclude', null, InputOption::VALUE_OPTIONAL, 'exclude columns', null),
