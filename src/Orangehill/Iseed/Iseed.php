@@ -34,6 +34,11 @@ class Iseed
     private $indentCharacter = "    ";
 
     /**
+     * @var Filesystem
+     */
+    private $files;
+
+    /**
      * @var Composer
      */
     private $composer;
@@ -440,13 +445,28 @@ class Iseed
         $version = (int) substr(app()->version(), 0, 2);
 
         if ($version >= 11) {
-            $builder = Schema::connection($this->databaseName)->getTables();
+            $connection = \DB::connection($this->databaseName);
+            $tables = Schema::connection($this->databaseName)->getTables();
+            $driver = $connection->getDriverName();
 
-            return collect($builder)
-                ->where('schema', \DB::connection($this->databaseName)->getDatabaseName())
-                ->map
-                ->name
-                ->toArray();
+            // Filter tables based on database driver
+            // MySQL/MariaDB: schema = database name, need to filter out other databases
+            // SQLite: schema = 'main', only one database per file
+            // PostgreSQL: schema = 'public' (default), filter by schema
+            $schemaFilter = match ($driver) {
+                'mysql', 'mariadb' => $connection->getDatabaseName(),
+                'pgsql' => 'public',
+                'sqlite' => 'main',
+                default => null,
+            };
+
+            $collection = collect($tables);
+
+            if ($schemaFilter !== null) {
+                $collection = $collection->where('schema', $schemaFilter);
+            }
+
+            return $collection->pluck('name')->values()->toArray();
         }
 
         $schema = \DB::connection($this->databaseName)->getDoctrineSchemaManager();

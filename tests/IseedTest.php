@@ -9,9 +9,9 @@ class IseedTest extends TestCase
 {
     protected static $stubsDir, $testStubsDir;
 
-    public function __construct(string $name)
+    public static function setUpBeforeClass(): void
     {
-        parent::__construct($name);
+        parent::setUpBeforeClass();
 
         static::$stubsDir = __DIR__.'/../src/Orangehill/Iseed/stubs';
         static::$testStubsDir = __DIR__.'/stubs';
