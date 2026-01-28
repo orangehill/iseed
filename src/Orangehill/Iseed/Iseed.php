@@ -5,6 +5,7 @@ namespace Orangehill\Iseed;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Composer;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 
 class Iseed
 {
@@ -31,6 +32,11 @@ class Iseed
      * @var string
      */
     private $indentCharacter = "    ";
+
+    /**
+     * @var Filesystem
+     */
+    private $files;
 
     /**
      * @var Composer
@@ -423,10 +429,53 @@ class Iseed
         return $this->files->put($databaseSeederPath, $content) !== false;
     }
 
-    public function getAllTableNames()
+    /**
+     * Get all table names
+     *
+     * @return array {string}
+     */
+    public function getAllTableNames(?string $databaseName = null): array
     {
-        // Depending on your Laravel version, you may use the Doctrine schema manager:
+        $this->setDatabaseName($databaseName);
+
+        /* NOTE: see: https://github.com/laravel/framework/pull/48864
+        * Depending on your Laravel version, you may use the Doctrine schema manager
+        */
+
+        $version = (int) substr(app()->version(), 0, 2);
+
+        if ($version >= 11) {
+            $connection = \DB::connection($this->databaseName);
+            $tables = Schema::connection($this->databaseName)->getTables();
+            $driver = $connection->getDriverName();
+
+            // Filter tables based on database driver
+            // MySQL/MariaDB: schema = database name, need to filter out other databases
+            // SQLite: schema = 'main', only one database per file
+            // PostgreSQL: schema = 'public' (default), filter by schema
+            $schemaFilter = match ($driver) {
+                'mysql', 'mariadb' => $connection->getDatabaseName(),
+                'pgsql' => 'public',
+                'sqlite' => 'main',
+                default => null,
+            };
+
+            $collection = collect($tables);
+
+            if ($schemaFilter !== null) {
+                $collection = $collection->where('schema', $schemaFilter);
+            }
+
+            return $collection->pluck('name')->values()->toArray();
+        }
+
         $schema = \DB::connection($this->databaseName)->getDoctrineSchemaManager();
+
         return $schema->listTableNames();
+    }
+
+    private function setDatabaseName(?string $databaseName)
+    {
+        $this->databaseName = $databaseName ?? config('database.default');
     }
 }
