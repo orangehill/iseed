@@ -64,10 +64,11 @@ class Iseed
      * @param  int      $max
      * @param  string   $prerunEvent
      * @param  string   $postrunEvent
+     * @param  bool     $register
      * @return bool
      * @throws Orangehill\Iseed\TableNotFoundException
      */
-    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null)
+    public function generateSeed($table, $prefix = null, $suffix = null, $database = null, $max = 0, $chunkSize = 0, $exclude = null, $prerunEvent = null, $postrunEvent = null, $dumpAuto = true, $indexed = true, $orderBy = null, $direction = 'ASC', $whereClause = null, $register = true)
     {
         if (!$database) {
             $database = config('database.default');
@@ -118,8 +119,12 @@ class Iseed
             $this->composer->dumpAutoloads();
         }
 
-        // Update the DatabaseSeeder.php file
-        return $this->updateDatabaseSeederRunMethod($className) !== false;
+        // Update the DatabaseSeeder.php file (unless --noregister is used)
+        if ($register) {
+            return $this->updateDatabaseSeederRunMethod($className) !== false;
+        }
+
+        return true;
     }
 
     /**

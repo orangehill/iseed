@@ -70,6 +70,7 @@ class IseedCommand extends Command
          $postrunEvents = explode(",", $this->option('postrun'));
          $dumpAuto = intval($this->option('dumpauto'));
          $indexed = !$this->option('noindex');
+         $register = !$this->option('noregister');
          $orderBy = $this->option('orderby');
          $direction = $this->option('direction');
          $prefix = $this->option('classnameprefix');
@@ -110,7 +111,8 @@ class IseedCommand extends Command
                          $indexed,
                          $orderBy,
                          $direction,
-                         $whereClause
+                         $whereClause,
+                        $register
                      ),
                      $table
                  );
@@ -134,7 +136,8 @@ class IseedCommand extends Command
                          $indexed,
                          $orderBy,
                          $direction,
-                         $whereClause
+                         $whereClause,
+                        $register
                      ),
                      $table
                  );
@@ -173,6 +176,7 @@ class IseedCommand extends Command
             array('postrun', null, InputOption::VALUE_OPTIONAL, 'postrun event name', null),
             array('dumpauto', null, InputOption::VALUE_OPTIONAL, 'run composer dump-autoload', true),
             array('noindex', null, InputOption::VALUE_NONE, 'no indexing in the seed', null),
+            array('noregister', null, InputOption::VALUE_NONE, 'do not register in DatabaseSeeder.php', null),
             array('orderby', null, InputOption::VALUE_OPTIONAL, 'orderby desc by column', null),
             array('direction', null, InputOption::VALUE_OPTIONAL, 'orderby direction', null),
             array('classnameprefix', null, InputOption::VALUE_OPTIONAL, 'prefix for class and file name', null),

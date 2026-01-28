@@ -197,6 +197,14 @@ Example:
 php artisan iseed users --noindex
 ```
 
+### noregister
+By using --noregister the seed file will be generated but will not be added to `DatabaseSeeder.php`. This is useful when you want to create backup seeders or manually manage which seeders are registered.
+
+Example:
+```
+php artisan iseed users --noregister
+```
+
 ### where
 Optional parameter which allows you to specify a SQL WHERE clause to filter the rows that will be included in the seed file. The WHERE clause should be provided as a string and will be applied directly to the SQL query.
 
