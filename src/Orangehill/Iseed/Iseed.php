@@ -43,7 +43,7 @@ class Iseed
      */
     private $composer;
 
-    public function __construct(Filesystem $filesystem = null, Composer $composer = null)
+    public function __construct(?Filesystem $filesystem = null, ?Composer $composer = null)
     {
         $this->files = $filesystem ?: new Filesystem;
         $this->composer = $composer ?: new Composer($this->files);
