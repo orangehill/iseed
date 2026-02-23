@@ -4,6 +4,8 @@
 [![Total Downloads](https://poser.pugx.org/orangehill/iseed/downloads.svg)](https://packagist.org/packages/orangehill/iseed)
 [![License](https://poser.pugx.org/orangehill/iseed/license.svg)](https://packagist.org/packages/orangehill/iseed)
 
+**Supports Laravel 8, 9, 10, 11, 12, and 13** (PHP 8.0+)
+
 ## Installation
 
 ### 1. Require with [Composer](https://getcomposer.org/)
